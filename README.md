@@ -1,1 +1,1 @@
-# ServiceScout--Local-Service-Booking-Platform
+# ServiceScout: Local Service Booking Platform
