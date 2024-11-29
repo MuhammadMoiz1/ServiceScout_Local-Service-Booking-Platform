@@ -1,0 +1,39 @@
+.main{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+.left{
+    width: 40%;
+    min-height: 80vh;
+    display: flex;              
+    align-items: center; 
+    justify-content: center;
+    flex-direction: column;    
+    
+}
+.cta{
+    color: #f56048 !important;
+    font-weight: 650;
+    border-color: #f56048 !important;
+}
+.cta:hover{
+    background-color: #f56048 !important;
+    color: white !important;
+}
+.right{
+    width: 60%;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.right img { /* Adjust the image to fill the div */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 10px; /* Optional: Add rounded corners */
+    width: 70%;
+  }
