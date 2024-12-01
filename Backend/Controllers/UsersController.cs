@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
-using ServiceScout_Backend.Data;  
+using Backend.Data;  
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Backend.Authentication;
+using System.Security.Claims;
 
 
-namespace ServiceScout_Backend.Controllers
+
+namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -25,8 +29,17 @@ namespace ServiceScout_Backend.Controllers
 
         // GET: api/Users/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
+            // Get the current authenticated user's ID from the JWT token
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            Console.WriteLine(currentUserId);
+            // Check if the requested user ID matches the authenticated user's ID
+            if (currentUserId != id)
+            {
+                return Forbid(); // Return 403 Forbidden if the user tries to access another user's data
+            }
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)

@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL;
 using System.Text.Json.Serialization;
 
 
-namespace ServiceScout_Backend.Data
+namespace Backend.Data
 {
     public class AppDbContext : DbContext
     {

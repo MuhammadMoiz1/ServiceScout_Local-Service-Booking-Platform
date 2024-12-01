@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace ServiceScout_Backend.Migrations
+namespace Backend.Migrations
 {
     /// <inheritdoc />
     public partial class addServiceRequestTable : Migration

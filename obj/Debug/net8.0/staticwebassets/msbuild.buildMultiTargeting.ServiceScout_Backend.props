@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\ServiceScout_Backend.props" />
+</Project>

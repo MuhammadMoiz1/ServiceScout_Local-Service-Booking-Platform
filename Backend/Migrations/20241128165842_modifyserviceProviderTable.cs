@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace ServiceScout_Backend.Migrations
+namespace Backend.Migrations
 {
     /// <inheritdoc />
     public partial class modifyserviceProviderTable : Migration

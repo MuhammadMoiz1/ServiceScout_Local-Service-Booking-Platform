@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "Xn6cVn3jDmjQsZyif6zd4pY5CMZQ0zduZuFY51+HvYQ=",
+  "Source": "ServiceScout_Backend",
+  "BasePath": "_content/ServiceScout_Backend",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
