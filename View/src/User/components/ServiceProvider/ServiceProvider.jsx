@@ -14,12 +14,14 @@ export default function ServiceProvider() {
     <Card className='main-SP-card' sx={{ 
         display: "flex",
         justifyContent: "space-between", // Ensures image stays on the right
-        marginRight:'10px',
+        marginRight:'25px',
+        marginLeft:'25px',
         alignItems: "center",
-        minWidth: "40vw",
-
+        minWidth: "30vw",
         padding: "10px", // Adds some spacing inside the card
         boxShadow: 3,
+        marginTop:'20px',
+        marginBottom:'20px'
         }}>
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <CardContent sx={{ flex: '1 0 auto' }}>

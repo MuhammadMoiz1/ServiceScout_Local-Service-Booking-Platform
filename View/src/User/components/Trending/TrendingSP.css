@@ -1,0 +1,16 @@
+ 
+.custom-prev-arrow, 
+.custom-next-arrow {
+  /* Customize arrow color and style */
+  color: #f55f4896 !important; /* Change arrow color */
+  
+  /* Optional: Modify arrow size */
+  width: 50px !important;
+  height: 50px !important;
+}
+
+.custom-prev-arrow::before, 
+.custom-next-arrow::before {
+  color: #f55f4896 !important; /* Alternative method to change color */
+  font-size: 30px !important; /* Adjust arrow size */
+}

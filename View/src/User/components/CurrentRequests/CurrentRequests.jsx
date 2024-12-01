@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box,Paper,Stack,Card,CardActions,CardContent,Typography,Divider,Grid2} from '@mui/material';
+import {Paper,Stack,Card,CardContent,Typography,Divider,Grid2} from '@mui/material';
 
 const card = (
     <React.Fragment>
@@ -12,10 +12,10 @@ const card = (
             variant="h6"
             component="div"
             sx={{
-              fontWeight: "bold",
+              fontWeight: "550",
               color: "#2196f3",
               mb: 2,
-              textAlign: "left",
+              textAlign: "center",
             }}
           >
             Kitchen Cabinets Repairing

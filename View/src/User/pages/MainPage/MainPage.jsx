@@ -4,11 +4,13 @@ import './MainPage.css'
 import Welcome from '../../components/Welcome/Welcome';
 import AvailableServices from '../../components/AvailableServices';
 import CurrentRequests from '../../components/CurrentRequests/CurrentRequests';
-import ServiceProvider from '../../components/ServiceProvider/ServiceProvider';
+import FavouriteSP from '../../components/Favourites/FavouriteSP';
 import {Typography} from '@mui/material';
+import TrendingSP from '../../components/Trending/TrendingSP';
 
 
 const MainPage = () => {
+  
   return (
     <div className='main-div'>
       <Navbar/>
@@ -40,10 +42,7 @@ const MainPage = () => {
       >
         Favourite Service Providers
       </Typography>
-      <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
-      <ServiceProvider/>
-      <ServiceProvider/>
-      </div>
+      <FavouriteSP/>
       
       </div>
       <div style={{minHeight:'50vh'}}>
@@ -54,6 +53,7 @@ const MainPage = () => {
       >
         Trending Service Providers Near You
       </Typography>
+      <TrendingSP/>
       </div>
       <div style={{minHeight:'50vh'}}>
       <Typography
@@ -67,5 +67,6 @@ const MainPage = () => {
     </div>
   )
 }
+
 
 export default MainPage;
