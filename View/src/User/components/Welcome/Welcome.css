@@ -2,7 +2,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 80vh;
+    min-height: 92vh;
     width: 100%;
     padding: 0;
     margin: 0;
@@ -32,8 +32,24 @@
     align-items: center;
     justify-content: center;
 }
-.right img { /* Adjust the image to fill the div */
-    height: auto; /* Maintain aspect ratio */
-    border-radius: 10px; /* Optional: Add rounded corners */
+.right img { 
+    height: auto;  
     width: 70%;
   }
+  @media screen and (max-width:1024px){
+    .main{
+        flex-direction: column-reverse;
+    }
+    .left{
+        width: 90%;
+        min-height: auto;
+        margin: auto;
+    }
+    .left h3{
+        font-size: 2.3rem;
+    }
+    .right{
+        width: 100%;
+        min-height: 45vh;
+    }
+}

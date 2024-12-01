@@ -1,5 +1,13 @@
 .main-div{
     display: flex;
     flex-direction: column;
-
 }
+.sections{
+    font-weight: 450;
+    font-size: 1.7rem;
+    text-align: center;
+    color: #333;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+  

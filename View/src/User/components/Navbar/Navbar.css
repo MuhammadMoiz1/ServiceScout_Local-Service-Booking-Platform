@@ -5,6 +5,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    min-height: 8vh;
 }
 .navbar .logo{
     width: 100px;
@@ -13,7 +14,7 @@
     display: flex;
     list-style: none;
     gap: 20px;
-    font-size: 16px;
+    font-size: 1.15rem;
 }
 .navbar-right{
     display: flex;

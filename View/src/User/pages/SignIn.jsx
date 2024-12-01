@@ -117,7 +117,8 @@ function SignIn() {
         pt:3,
         borderRadius: 3,
         backgroundColor: "white",
-        marginBottom:'20px'
+        marginBottom:'20px',
+        minHeight:'80vh'
       }}
     >
       <div style={{display:"flex",alignItems:'center',justifyContent:'center'}}>
@@ -125,13 +126,13 @@ function SignIn() {
           width:'90px'
         }}/>
       </div>
-      <Typography variant="h5" align="center" gutterBottom sx={{ color: "#2196F3",fontWeight:700 }}>
+      <Typography variant="h5" align="center" gutterBottom sx={{ color: "#2196F3",fontWeight:700,marginBottom:'2vh' }}>
       Start your journey!
       </Typography>
       <Box
             component="form"
             onSubmit={handleSubmit}
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2 ,alignItems:'center'}}
+            sx={{ display: 'flex', flexDirection: 'column', gap: '2.8vh' ,alignItems:'center'}}
         >
             <Field
               label="Full Name"
