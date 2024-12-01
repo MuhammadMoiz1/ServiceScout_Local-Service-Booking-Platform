@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import SignIn from './User/pages/SignIn';
 import MainPage from './User/pages/MainPage/MainPage';
 import { Route, Routes } from 'react-router-dom';
+import Login from './User/pages/Login';
 
 const App = () => {
   
@@ -20,7 +21,11 @@ const App = () => {
           <SignIn />
           </div>
           }/>
-        
+          <Route path='/login' element={
+          <div >
+          <Login />
+          </div>
+          }/>
         
       </Routes>
     </div>

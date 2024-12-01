@@ -7,6 +7,7 @@ import CurrentRequests from '../../components/CurrentRequests/CurrentRequests';
 import FavouriteSP from '../../components/Favourites/FavouriteSP';
 import {Typography} from '@mui/material';
 import TrendingSP from '../../components/Trending/TrendingSP';
+import AllSP from '../../components/AllSP/AllSP';
 
 
 const MainPage = () => {
@@ -51,7 +52,7 @@ const MainPage = () => {
         className='sections'
         sx={{marginBottom:'10px'}}
       >
-        Trending Service Providers Near You
+        Top Service Providers Near You
       </Typography>
       <TrendingSP/>
       </div>
@@ -63,6 +64,7 @@ const MainPage = () => {
       >
         All Service Providers
       </Typography>
+      <AllSP/>
       </div>
     </div>
   )
