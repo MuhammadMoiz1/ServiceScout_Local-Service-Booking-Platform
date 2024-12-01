@@ -1,0 +1,5 @@
+.search-bar-container {
+  width: 100%;
+  max-width: 750px; /* Adjust the width as needed */
+  margin: 20px auto; /* Center the search bar with spacing */
+}
