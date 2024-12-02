@@ -3,6 +3,7 @@ import React from "react";
 import SignIn from "./User/pages/SignIn";
 import MainPage from "./User/pages/MainPage/MainPage";
 import MainPageVendor from "./Vendor/Pages/MainPage/MainPageVendor";
+import ServiceHistory from "./Vendor/components/ServiceHistory/ServiceHistory";
 import { Route, Routes } from "react-router-dom";
 import Login from "./User/pages/Login";
 import ServiceRequestForm from "./User/pages/CreateServiceRequest/CreateSR";
@@ -25,6 +26,15 @@ const App = () => {
           element={
             <div>
               <MainPageVendor />
+            </div>
+          }
+        />
+
+        <Route
+          path="/vendor/service-history"
+          element={
+            <div>
+              <ServiceHistory />
             </div>
           }
         />

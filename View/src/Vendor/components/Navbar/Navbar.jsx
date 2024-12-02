@@ -30,7 +30,7 @@ const Navbar = () => {
           Home
         </NavLink>
         <NavLink
-          to="/new-request"
+          to="/vendor/new-request"
           className={({ isActive }) => (isActive ? "active" : "")}
           onClick={() => {
             setClose(false);
@@ -40,7 +40,7 @@ const Navbar = () => {
           New Request
         </NavLink>
         <NavLink
-          to="/service-history"
+          to="/vendor/service-history"
           className={({ isActive }) => (isActive ? "active" : "")}
           onClick={() => {
             setClose(false);
