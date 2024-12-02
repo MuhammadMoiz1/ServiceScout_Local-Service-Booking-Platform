@@ -5,9 +5,21 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import PersonPinIcon from "@mui/icons-material/PersonPin";
 import SendIcon from "@mui/icons-material/Send";
-import { Card, CardContent, Typography } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  CircularProgress,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+} from "@mui/material";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
-import "./Jobs.css"; // Import the external CSS file
+import api from "../../../apiRequests";
+import "./Jobs.css";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -34,30 +46,80 @@ function TabPanel(props) {
 
 export default function IconLabelTabs() {
   const [value, setValue] = React.useState(0);
+  const [recents, setRecents] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [selectedRequest, setSelectedRequest] = React.useState(null);
+  const [vendorPrice, setVendorPrice] = React.useState("");
+
+  // Open interest dialog
+  const handleInterested = (request) => {
+    setSelectedRequest(request);
+    setVendorPrice(request.price.toString()); // Initialize with original price
+    setOpenDialog(true);
+  };
+
+  // Close dialog
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedRequest(null);
+    setVendorPrice("");
+  };
+
+  const handleConfirmInterest = async () => {
+    if (!selectedRequest) {
+      console.error("No selected request found.");
+      return;
+    }
+
+    const vendorId = 1; // Mocked for now
+
+    const requestData = {
+      RequestId: selectedRequest.id,
+      UserId: selectedRequest.userId, // From selectedRequest
+      VendorId: vendorId, // Mocked for now
+      Amount: parseFloat(vendorPrice), // Ensure vendorPrice is a number
+    };
+
+    try {
+      const response = await api.post("/PendingLogs", requestData);
+
+      if (response.status === 201) {
+        console.log("Interest logged successfully:", response.data);
+        handleCloseDialog();
+      } else {
+        console.error("Failed to log interest:", response);
+      }
+    } catch (error) {
+      console.error("Error posting interest:", error);
+    }
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  // List data (for demonstration purposes)
-  const recents = [
-    {
-      username: "John Doe",
-      description: "Looking for a plumber for some repairs in the bathroom.",
-      area: "New York",
-      service: "Plumbing",
-      price: "$150",
-      serviceTime: "2 hours",
-    },
-    {
-      username: "Jane Smith",
-      description: "Need an electrician for some wiring work.",
-      area: "Los Angeles",
-      service: "Electrical",
-      price: "$200",
-      serviceTime: "3 hours",
-    },
-  ];
+  React.useEffect(() => {
+    const fetchRecentRequests = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get("/ServiceRequests/pending");
+        setRecents(response.data);
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Error fetching recent requests:", err);
+        setError(err);
+        setIsLoading(false);
+      }
+    };
+
+    if (value === 0) {
+      // Only fetch when Recent tab is active
+      fetchRecentRequests();
+    }
+  }, [value]);
 
   const directRequests = [
     {
@@ -116,6 +178,20 @@ export default function IconLabelTabs() {
     },
   ];
 
+  // Render loading state
+  const renderLoading = () => (
+    <div style={{ display: "flex", justifyContent: "center", padding: "20px" }}>
+      <CircularProgress />
+    </div>
+  );
+
+  // Render error state
+  const renderError = () => (
+    <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
+      Error loading service requests. Please try again later.
+    </div>
+  );
+
   return (
     <div style={{ position: "relative" }}>
       <div>
@@ -137,33 +213,58 @@ export default function IconLabelTabs() {
         </Tabs>
 
         <TabPanel value={value} index={0} className="tabPanel">
-          {recents.map((item, index) => (
-            <Card key={index} className="card">
-              <CardContent className="cardContent">
-                <Typography className="cardHeader">{item.username}</Typography>
-                <Typography className="cardDetail">
-                  Description: {item.description}
-                </Typography>
-                <Typography className="cardDetail">
-                  Area: {item.area}
-                </Typography>
-                <Typography className="cardDetail">
-                  Service: {item.service}
-                </Typography>
-                <Typography className="cardPrice">
-                  Price: {item.price}
-                </Typography>
-                <Typography className="cardServiceTime">
-                  Service Time: {item.serviceTime}
-                </Typography>
-                <div className="cardFooter">
-                  <Typography variant="body2">
-                    Posted: {new Date().toLocaleDateString()}
+          {isLoading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                padding: "20px",
+              }}
+            >
+              <CircularProgress />
+            </div>
+          ) : error ? (
+            <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
+              Error loading service requests. Please try again later.
+            </div>
+          ) : (
+            recents.map((item, index) => (
+              <Card key={item.id} className="card">
+                <CardContent className="cardContent">
+                  <Typography className="cardHeader">
+                    {item.username || "Unknown User"}
                   </Typography>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <Typography className="cardDetail">
+                    Description: {item.description}
+                  </Typography>
+                  <Typography className="cardDetail">
+                    Area: {item.area}
+                  </Typography>
+                  <Typography className="cardDetail">
+                    Service: {item.serviceName || "Unspecified Service"}
+                  </Typography>
+                  <Typography className="cardPrice">
+                    Price: ${item.price.toFixed(2)}
+                  </Typography>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleInterested(item)}
+                    >
+                      Interested
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </TabPanel>
 
         <TabPanel value={value} index={1} className="tabPanel">
@@ -260,6 +361,42 @@ export default function IconLabelTabs() {
           ))}
         </TabPanel>
       </div>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="interest-dialog-title"
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle id="interest-dialog-title">Confirm Interest</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" gutterBottom>
+            Original Price: ${selectedRequest?.price.toFixed(2)}
+          </Typography>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Your Proposed Price"
+            type="number"
+            fullWidth
+            variant="outlined"
+            value={vendorPrice}
+            onChange={(e) => setVendorPrice(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="secondary">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmInterest}
+            color="primary"
+            variant="contained"
+          >
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

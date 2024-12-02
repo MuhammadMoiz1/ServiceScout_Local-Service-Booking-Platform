@@ -20,12 +20,49 @@ namespace Backend.Controllers
 
         // GET: api/ServiceRequests
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ServiceRequest>>> GetServiceRequests()
+        public async Task<ActionResult<IEnumerable<ServiceRequestDto>>> GetServiceRequests()
         {
             var serviceRequests = await _context.ServiceRequests
-                                                .Include(r => r.User)  // Include user details
-                                                .Include(r => r.Service)  // Include vendor service details
-                                                .ToListAsync();
+                .Include(r => r.User)  
+                .Include(r => r.Service)  
+                .Select(r => new ServiceRequestDto  
+                {
+                    Id = r.Id,
+                    Description = r.Description,
+                    Area = r.Area,
+                    Price = r.Price,
+                    IsCompleted = r.Iscompleted,
+                    PostedOn = r.PostedOn,
+                    Username = r.User.Name,  
+                    UserId = r.User.Id,
+                    ServiceName = r.Service.ServiceName  
+                })
+                .ToListAsync();
+
+            return Ok(serviceRequests);
+        }
+
+        [HttpGet("pending")]
+        public async Task<ActionResult<IEnumerable<ServiceRequestDto>>> GetPendingServiceRequests()
+        {
+            var serviceRequests = await _context.ServiceRequests
+                .Where(r => r.Iscompleted == false)  
+                .Include(r => r.User)
+                .Include(r => r.Service)
+                .Select(r => new ServiceRequestDto
+                {
+                    Id = r.Id,
+                    Description = r.Description,
+                    Area = r.Area,
+                    Price = r.Price,
+                    IsCompleted = r.Iscompleted,
+                    PostedOn = r.PostedOn,
+                    Username = r.User.Name,
+                    UserId = r.User.Id,
+                    ServiceName = r.Service.ServiceName
+                })
+                .ToListAsync();
+
             return Ok(serviceRequests);
         }
 
@@ -168,5 +205,18 @@ namespace Backend.Controllers
     public class UpdateServiceRequestDto : CreateServiceRequestDto
     {
         public int Id { get; set; }
+    }
+
+    public class ServiceRequestDto
+    {
+        public int Id { get; set; }
+        public string Description { get; set; }
+        public string Area { get; set; }
+        public float Price { get; set; }
+        public bool IsCompleted { get; set; }
+        public DateTime PostedOn { get; set; }
+        public string Username { get; set; }
+        public int UserId { get; set; }
+        public string ServiceName { get; set; }
     }
 }
