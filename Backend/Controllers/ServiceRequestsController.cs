@@ -84,7 +84,7 @@ namespace Backend.Controllers
             return Ok(serviceRequest);
         }
 
-        [HttpGet(userCurrent)]
+        [HttpGet("userCurrent")]
         [Authorize(Roles = "User")]
         public async Task<ActionResult<IEnumerable<ServiceRequestDto>>> GetUserCurrentServiceRequests()
         {
