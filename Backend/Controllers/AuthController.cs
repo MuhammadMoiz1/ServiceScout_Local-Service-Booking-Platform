@@ -72,6 +72,8 @@ namespace Backend.Controllers
         {
             if (_context.Users.Any(u => u.Email == request.Email))
                 return BadRequest("Email is already in use.");
+            if (_context.Users.Any(u => u.CnicNumber == request.CnicNumber))
+                return BadRequest("CNIC is already in use.");
 
             var user = new User
             {

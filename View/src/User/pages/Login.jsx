@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { TextField, Button,Box, Typography, Paper,styled} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { TextField, Button,Box, Typography, Paper,styled,Snackbar,Alert} from "@mui/material";
 import logo from '../../assets/logo.png';
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
+import axios from "axios";
 
 
 const Field = styled(TextField)(({ theme }) => ({
@@ -26,42 +27,37 @@ const Field = styled(TextField)(({ theme }) => ({
 
 
 function Login() {
-    
+
+  const [open, setOpen] = React.useState(false);
+  const [errmessage,setErrmessage]=useState('');  
+  const [intense,setIntense]=useState('');
   const navigate=useNavigate();
+  const location = useLocation();
+  useEffect(()=>{
+    if(location.state){
+    setErrmessage(location.state?.successMessage);
+    setIntense('success');
+    setOpen(true);
+    }
+  },[])
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen(false);
+}
+
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    Email: "",
+    Password: "",
   });
 
 
   const [errors, setErrors] = useState({
-    email: "",
-    password: "",
+    Email: "",
+    Password: "",
   });
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-            console.log(`${position.coords.latitude},${position.coords.longitude}`)
-          setFormData((prev) => ({
-            ...prev,
-            ['area']:`${position.coords.latitude},${position.coords.longitude}`
-          }));
-        },
-        (err) => {
-          setErrors((prev) => ({
-            ...prev,
-            ['area']: err.message,
-          }))  
-        }
-      );
-    } else {
-        setErrors({
-            ...prev,
-            ['area']: 'Geolocation is not supported by this browser.',
-          })   
-    }
-  };
+  
 
 
   const handleChange = (e) => {
@@ -72,12 +68,22 @@ function Login() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit =async (e) => {
     e.preventDefault();
-    if (validate()) {
-      console.log("Form Submitted:", formData);
-      alert("Form submitted successfully!");
-    }
+    try {
+        const response = await axios.post("http://localhost:5150/api/Auth/login", formData);
+  
+        localStorage.setItem("token", response.data.token);
+  
+        console.log("Login Successful:", response.data);
+        navigate('/');
+      } catch (err) {
+        console.error("Login Failed:", err.response?.data || err.message);
+        // setError(err.response?.data || "Login failed. Please try again.");
+        setErrmessage(err.response.data);
+        setIntense('error');
+        setOpen(true);
+      }
   };
 
   return (
@@ -96,6 +102,16 @@ function Login() {
         minHeight:'50vh'
       }}
     >
+        <Snackbar open={open} autoHideDuration={5000} onClose={handleClose}>
+        <Alert
+          onClose={handleClose}
+          severity={intense}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {errmessage}
+        </Alert>
+      </Snackbar>
       <div style={{display:"flex",alignItems:'center',justifyContent:'center'}}>
         <img src={logo} alt="logo" style={{
           width:'90px'
@@ -111,25 +127,25 @@ function Login() {
         >
             <Field
               label="Enter Email"
-              name="email"
+              name="Email"
               type="email"
               fullWidth
-              value={formData.email}
+              value={formData.Email}
               onChange={handleChange}
-              error={!!errors.email}
-              helperText={errors.email}
+              error={!!errors.Email}
+              helperText={errors.Email}
               variant="outlined"
             />
           
             <Field
               label="Password"
-              name="password"
+              name="Password"
               type="password"
               fullWidth
-              value={formData.password}
+              value={formData.Password}
               onChange={handleChange}
-              error={!!errors.password}
-              helperText={errors.password}
+              error={!!errors.Password}
+              helperText={errors.Password}
               variant="outlined"
             />
     

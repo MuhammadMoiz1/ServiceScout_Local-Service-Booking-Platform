@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Data;
+using Microsoft.AspNetCore.Authorization;
+using Backend.Authentication;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
@@ -44,12 +47,15 @@ namespace Backend.Controllers
         }
 
         // POST: api/ServiceRequests
+        
         [HttpPost]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<ServiceRequest>> PostServiceRequest(CreateServiceRequestDto requestDto)
         {
             // Validate if ServiceId and UserId are valid
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             var service = await _context.VendorServices.FindAsync(requestDto.ServiceId);
-            var user = await _context.Users.FindAsync(requestDto.UserId);
+            var user = await _context.Users.FindAsync(currentUserId);
 
             if (service == null)
             {
@@ -64,12 +70,14 @@ namespace Backend.Controllers
             // Create a new ServiceRequest from the DTO
             var serviceRequest = new ServiceRequest
             {
-                UserId = requestDto.UserId,
+                UserId = currentUserId,
                 ServiceId = requestDto.ServiceId,
                 Description = requestDto.Description,
                 Area = requestDto.Area,
                 Price = requestDto.Price,
-                RequestedTime = requestDto.RequestedTime
+                RequestedTime = DateTime.SpecifyKind(requestDto.RequestedTime, DateTimeKind.Utc),
+                Iscompleted = false,
+                PostedOn= DateTime.UtcNow
             };
 
             // Add the new ServiceRequest to the database

@@ -10,7 +10,8 @@ const Navbar = () => {
   const [close, setClose] = useState(false);
   const [hamClass, setHamClass] = useState('navbar-menu');
 
-  const handleSignInClick = () => {
+  const handleLogoutClick = () => {
+    localStorage.removeItem("token");
     console.log('Log out clicked'); // Example log for debugging
   };
 
@@ -27,7 +28,7 @@ const Navbar = () => {
           Home
         </NavLink>
         <NavLink
-          to="/new-request"
+          to="/newRequest"
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => { setClose(false); setHamClass('navbar-menu'); }}
         >
@@ -49,7 +50,7 @@ const Navbar = () => {
         </NavLink>
       </ul>
       <div className="navbar-right">
-        <button onClick={handleSignInClick}>Log out</button>
+        <button onClick={handleLogoutClick}>Log out</button>
       </div>
       <div className="hamburger">
         {close ? (

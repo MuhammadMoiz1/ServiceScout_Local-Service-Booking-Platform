@@ -88,7 +88,9 @@ namespace Backend.Data
         public string Description { get; set; }
         public string Area { get; set; }
         public float Price { get; set; }
+        public bool Iscompleted { get; set; }
         public DateTime RequestedTime { get; set; }
+        public DateTime PostedOn { get; set; }
         public int ServiceId { get; set; }
         [JsonIgnore]
         public VendorService Service { get; set; }
@@ -101,6 +103,7 @@ namespace Backend.Data
         public int UserId { get; set; }
         public int VendorId { get; set; }
         public float Amount { get; set; }
+        public bool Requester {  get; set; }
 
         [JsonIgnore]
         public ServiceRequest Request { get; set; }

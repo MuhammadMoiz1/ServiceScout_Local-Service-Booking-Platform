@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { TextField, Button,Box, Typography, Paper,styled} from "@mui/material";
+import { TextField, Button,Box, Typography, Paper,styled,Snackbar,Alert} from "@mui/material";
 import logo from '../../assets/logo.png';
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 
 const Field = styled(TextField)(({ theme }) => ({
@@ -27,7 +28,7 @@ const Field = styled(TextField)(({ theme }) => ({
 
 function SignIn() {
   const navigate=useNavigate();
-
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -48,6 +49,15 @@ function SignIn() {
     confirmPassword: "",
     area:"",
   });
+  const [open, setOpen] = React.useState(false);
+  const [errmessage,setErrmessage]=useState(''); 
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -98,11 +108,26 @@ function SignIn() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validate()) {
-      console.log("Form Submitted:", formData);
-      alert("Form submitted successfully!");
+  const handleSubmit =async (e) => {
+    e.preventDefault(); 
+    const data=
+      {
+        name: formData['name'],
+        area: formData['area'],
+        cnicNumber: formData.cnic,
+        email: formData.email,
+        password: formData.password,
+        contactInfo: formData.contact
+      }
+    
+    try {
+      const response = await axios.post('http://localhost:5150/api/Auth/signup', data); // Replace with your API URL
+      console.log('Response:', response.data);
+      navigate("/login", { state: { successMessage: "Account created successfully! Please log in." } });
+    } catch (error) {
+      console.error('Error submitting form:', error.response || error.message);
+      setErrmessage(error.response.data);
+      setOpen(true);
     }
   };
 
@@ -122,6 +147,17 @@ function SignIn() {
         minHeight:'80vh'
       }}
     >
+      
+      <Snackbar open={open} autoHideDuration={5000} onClose={handleClose}>
+        <Alert
+          onClose={handleClose}
+          severity='error'
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {errmessage}
+        </Alert>
+      </Snackbar>
       <div style={{display:"flex",alignItems:'center',justifyContent:'center'}}>
         <img src={logo} alt="logo" style={{
           width:'90px'
@@ -144,7 +180,7 @@ function SignIn() {
               error={!!errors.name}
               helperText={errors.name}
               variant="outlined"
-             
+              required
             />
           
             <Field
@@ -157,6 +193,7 @@ function SignIn() {
               error={!!errors.email}
               helperText={errors.email}
               variant="outlined"
+              required
             />
             <Field
               label="Contact Number"
@@ -168,6 +205,7 @@ function SignIn() {
               error={!!errors.contact}
               helperText={errors.contact}
               variant="outlined"
+              required
             />
             <Field
               label="CNIC Number"
@@ -178,6 +216,7 @@ function SignIn() {
               error={!!errors.cnic}
               helperText={errors.cnic}
               variant="outlined"
+              required
             />
           
             <Field
@@ -190,6 +229,7 @@ function SignIn() {
               error={!!errors.password}
               helperText={errors.password}
               variant="outlined"
+              required
             />
             <Field
               label="Confirm Password"
@@ -201,6 +241,7 @@ function SignIn() {
               error={!!errors.confirmPassword}
               helperText={errors.confirmPassword}
               variant="outlined"
+              required
             />
      <Box
       sx={{
@@ -231,6 +272,7 @@ function SignIn() {
           color:'#f56048',
           // backgroundColor:'#2196F3',
         }}
+        
       >
         Click Here
       </Button>

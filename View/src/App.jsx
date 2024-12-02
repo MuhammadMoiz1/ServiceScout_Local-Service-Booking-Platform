@@ -1,9 +1,11 @@
 import "./App.css";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import SignIn from "./User/pages/SignIn";
 import MainPage from "./User/pages/MainPage/MainPage";
 import MainPageVendor from "./Vendor/Pages/MainPage/MainPageVendor";
 import { Route, Routes } from "react-router-dom";
+import Login from "./User/pages/Login";
+import ServiceRequestForm from "./User/pages/CreateServiceRequest/CreateSR";
 
 const App = () => {
   return (
@@ -34,7 +36,24 @@ const App = () => {
             </div>
           }
         />
+        <Route
+          path="/login"
+          element={
+            <div>
+              <Login />
+            </div>
+          }
+        />
+        <Route
+          path="/newRequest"
+          element={
+            <div>
+              <ServiceRequestForm />
+            </div>
+          }
+        />
       </Routes>
+      
     </div>
   );
 };
