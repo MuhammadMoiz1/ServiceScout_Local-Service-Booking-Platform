@@ -126,4 +126,5 @@ namespace Backend.Data
         [JsonIgnore]
         public ServiceVendor Vendor { get; set; }
     }
+
 }

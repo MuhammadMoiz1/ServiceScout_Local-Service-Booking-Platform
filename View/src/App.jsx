@@ -7,6 +7,7 @@ import ServiceHistory from "./Vendor/components/ServiceHistory/ServiceHistory";
 import { Route, Routes } from "react-router-dom";
 import Login from "./User/pages/Login";
 import ServiceRequestForm from "./User/pages/CreateServiceRequest/CreateSR";
+import ResponserCard from "./User/components/ResponseCard/ResponserCard";
 
 const App = () => {
   return (
@@ -59,6 +60,14 @@ const App = () => {
           element={
             <div>
               <ServiceRequestForm />
+            </div>
+          }
+        />
+        <Route
+          path="/responser"
+          element={
+            <div>
+              <ResponserCard/>
             </div>
           }
         />

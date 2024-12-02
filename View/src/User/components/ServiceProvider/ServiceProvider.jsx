@@ -5,7 +5,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import StarIcon from '@mui/icons-material/Star';
-import { Chip } from '@mui/material';
+import { Button, Chip } from '@mui/material';
 
 export default function ServiceProvider() {
   const theme = useTheme();
@@ -37,8 +37,19 @@ export default function ServiceProvider() {
                 Rating:
               </Typography>
               <Typography variant="body1" color="text.primary">
-                4.5 <StarIcon sx={{fontSize:'16px',color:'#FFD700'}}/>
+                4.5 <StarIcon sx={{fontSize:'18px',color:'#FFD700'}}/>
+              </Typography> 
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1,ml:'5px' }}>
+             <Typography
+                variant="subtitle1"
+                sx={{ fontWeight: "600", color: "#555" ,marginRight:'5px'}}
+              >
+                Services Provided:
               </Typography>
+              <Typography variant="body1" color="text.primary">
+                300 
+              </Typography> 
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center',gap:'2',ml:'5px' }}>
         <Chip
@@ -60,6 +71,9 @@ export default function ServiceProvider() {
                   }}
                 />        
         </Box>
+        <Button variant='contained' sx={{backgroundColor:'#f56048',marginTop:'20px',marginLeft:'20px',padding: '3px 0px',width:'170px',borderRadius:'50px'}}>
+          Request Service
+        </Button>
       </Box>
       <Box
       sx={{

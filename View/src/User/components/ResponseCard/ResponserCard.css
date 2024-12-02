@@ -1,0 +1,13 @@
+.res-upper{
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    max-width: 290px;
+    height: auto;
+    padding-bottom: 20px;
+    border-radius: 20px !important;
+    white-space: normal;
+}
+.res-second{
+    display: flex;
+}

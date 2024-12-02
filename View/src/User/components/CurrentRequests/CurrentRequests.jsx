@@ -1,10 +1,11 @@
 import React from 'react';
-import {Paper,Stack,Card,CardContent,Typography,Divider,Grid2,Button,CardActionArea,Grid,CardMedia} from '@mui/material';
+import {Paper,Stack,Card,CardContent,Typography,Divider,Grid2,Button,CardActionArea,CardMedia} from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import ResponserCard from '../ResponseCard/ResponserCard';
 
 
 const Customcard = ()=>{
@@ -97,10 +98,11 @@ const Customcard = ()=>{
       >
         <DialogTitle id="scroll-dialog-title">Responses</DialogTitle>
         <DialogContent dividers={scroll === 'paper'} sx={{
-          minWidth:'40vw',
+          minWidth:'45vw',
           minHeight:'50vh',
         }}>
-          
+          <ResponserCard/>
+          <ResponserCard/> 
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Close</Button>

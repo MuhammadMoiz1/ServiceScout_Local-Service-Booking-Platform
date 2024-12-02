@@ -35,18 +35,18 @@ const MainPage = () => {
       </Typography>
       <CurrentRequests/>
       </div>
-      <div style={{minHeight:'50vh',marginTop:'40px'}}>
+      <div style={{minHeight:'60vh',marginTop:'40px'}}>
       <Typography
         variant="h4"
         className='sections'
         sx={{marginBottom:'10px'}}
       >
-        Favourite Service Providers
+        Your Previous Service Providers
       </Typography>
       <FavouriteSP/>
       
       </div>
-      <div style={{minHeight:'50vh'}}>
+      <div style={{minHeight:'60vh'}}>
       <Typography
         variant="h4"
         className='sections'
