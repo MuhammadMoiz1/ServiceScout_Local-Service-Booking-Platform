@@ -50,8 +50,7 @@
               "RelativeToolTip": "Controllers\\PendingLogsController.cs",
               "ViewState": "AgIAABYAAAAAAAAAAAAAAKwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-28T17:13:57.739Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-28T17:13:57.739Z"
             },
             {
               "$type": "Document",
@@ -63,8 +62,7 @@
               "RelativeToolTip": "Controllers\\ServiceRequestsController.cs",
               "ViewState": "AgIAAGgAAAAAAAAAAAAAAHoAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-28T17:10:56.437Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-28T17:10:56.437Z"
             },
             {
               "$type": "Document",
@@ -76,8 +74,7 @@
               "RelativeToolTip": "Controllers\\VendorServicesController.cs",
               "ViewState": "AgIAAB4AAAAAAAAAAAAAAC0AAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-28T15:37:02.105Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-28T15:37:02.105Z"
             },
             {
               "$type": "Document",
@@ -89,8 +86,7 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAACHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-11-27T09:55:35.465Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-27T09:55:35.465Z"
             },
             {
               "$type": "Document",
@@ -102,8 +98,7 @@
               "RelativeToolTip": "Data\\AppDbContext.cs",
               "ViewState": "AgIAAGMAAAAAAAAAAAAAAHoAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-27T09:53:38.807Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-27T09:53:38.807Z"
             },
             {
               "$type": "Document",
@@ -113,10 +108,8 @@
               "RelativeDocumentMoniker": "Controllers\\ServiceOrdersController.cs",
               "ToolTip": "D:\\ServiceScout_Backend\\Controllers\\ServiceOrdersController.cs",
               "RelativeToolTip": "Controllers\\ServiceOrdersController.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAJoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-28T14:48:42.644Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-28T14:48:42.644Z"
             },
             {
               "$type": "Document",
@@ -128,8 +121,7 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-28T15:30:11.462Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-28T15:30:11.462Z"
             }
           ]
         }

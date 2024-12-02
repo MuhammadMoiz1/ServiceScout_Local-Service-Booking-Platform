@@ -1,19 +1,28 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Grid, TextField, Button, Typography, Box, Paper,Snackbar,Alert } from "@mui/material";
+import {
+  Grid,
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Paper,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import api from '../../apiRequests';
+import api from "../../../apiRequests";
 
 const ServiceRequestForm = () => {
   const [open, setOpen] = React.useState(false);
-  const [errmessage,setErrmessage]=useState('');  
-const navigate =useNavigate();
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-          return;
-        }
-        setOpen(false);
-    }  
+  const [errmessage, setErrmessage] = useState("");
+  const navigate = useNavigate();
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
   const [formData, setFormData] = useState({
     userId: "",
     serviceId: "",
@@ -32,11 +41,11 @@ const navigate =useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
- 
+
     try {
-      const response = await api.post("/ServiceRequests",formData);
+      const response = await api.post("/ServiceRequests", formData);
       console.log("Service Request Created:", response.data);
-      navigate('/');
+      navigate("/");
     } catch (error) {
       console.error("Error creating service request:", error);
       setErrmessage(error.message);
@@ -55,18 +64,24 @@ const navigate =useNavigate();
         padding: "20px",
       }}
     >
-        <Snackbar open={open} autoHideDuration={5000} onClose={handleClose}>
+      <Snackbar open={open} autoHideDuration={5000} onClose={handleClose}>
         <Alert
           onClose={handleClose}
           severity="error"
           variant="filled"
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
         >
           {errmessage}
         </Alert>
       </Snackbar>
-      <Paper elevation={3} sx={{ padding: "30px", maxWidth: "600px", width: "100%" }}>
-        <Typography variant="h5" sx={{ marginBottom: "20px", textAlign: "center" }}>
+      <Paper
+        elevation={3}
+        sx={{ padding: "30px", maxWidth: "600px", width: "100%" }}
+      >
+        <Typography
+          variant="h5"
+          sx={{ marginBottom: "20px", textAlign: "center" }}
+        >
           Create Service Request
         </Typography>
         <form onSubmit={handleSubmit}>
