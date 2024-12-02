@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import SignIn from "./User/pages/SignIn";
 import MainPage from "./User/pages/MainPage/MainPage";
 import MainPageVendor from "./Vendor/Pages/MainPage/MainPageVendor";
+import ServiceHistory from "./Vendor/components/ServiceHistory/ServiceHistory";
 import { Route, Routes } from "react-router-dom";
 
 const App = () => {
@@ -23,6 +24,15 @@ const App = () => {
           element={
             <div>
               <MainPageVendor />
+            </div>
+          }
+        />
+
+        <Route
+          path="/vendor/service-history"
+          element={
+            <div>
+              <ServiceHistory />
             </div>
           }
         />

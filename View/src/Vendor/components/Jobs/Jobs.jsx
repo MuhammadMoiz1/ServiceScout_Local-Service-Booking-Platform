@@ -4,6 +4,7 @@ import Tab from "@mui/material/Tab";
 import PhoneIcon from "@mui/icons-material/Phone";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import PersonPinIcon from "@mui/icons-material/PersonPin";
+import SendIcon from "@mui/icons-material/Send";
 import { Card, CardContent, Typography } from "@mui/material";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import "./Jobs.css"; // Import the external CSS file
@@ -54,6 +55,25 @@ export default function IconLabelTabs() {
       area: "Los Angeles",
       service: "Electrical",
       price: "$200",
+      serviceTime: "3 hours",
+    },
+  ];
+
+  const directRequests = [
+    {
+      username: "Emily Chen",
+      description: "Need urgent plumbing services for kitchen sink",
+      area: "San Francisco",
+      service: "Plumbing",
+      price: "$180",
+      serviceTime: "2 hours",
+    },
+    {
+      username: "Michael Rodriguez",
+      description: "Electrical wiring repair needed",
+      area: "Seattle",
+      service: "Electrical",
+      price: "$250",
       serviceTime: "3 hours",
     },
   ];
@@ -113,6 +133,7 @@ export default function IconLabelTabs() {
           />
           <Tab icon={<FavoriteIcon />} label="FAVORITES" className="tab" />
           <Tab icon={<PersonPinIcon />} label="NEARBY" className="tab" />
+          <Tab icon={<SendIcon />} label="DIRECT REQUESTS" className="tab" />
         </Tabs>
 
         <TabPanel value={value} index={0} className="tabPanel">
@@ -199,6 +220,40 @@ export default function IconLabelTabs() {
                   <Typography variant="body2">
                     Posted: {new Date().toLocaleDateString()}
                   </Typography>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </TabPanel>
+
+        <TabPanel value={value} index={3} className="tabPanel">
+          {directRequests.map((item, index) => (
+            <Card key={index} className="card">
+              <CardContent className="cardContent">
+                <Typography className="cardHeader">{item.username}</Typography>
+                <Typography className="cardDetail">
+                  Description: {item.description}
+                </Typography>
+                <Typography className="cardDetail">
+                  Area: {item.area}
+                </Typography>
+                <Typography className="cardDetail">
+                  Service: {item.service}
+                </Typography>
+                <Typography className="cardPrice">
+                  Price: {item.price}
+                </Typography>
+                <Typography className="cardServiceTime">
+                  Service Time: {item.serviceTime}
+                </Typography>
+                <div className="cardFooter">
+                  <Typography variant="body2">
+                    Posted: {new Date().toLocaleDateString()}
+                  </Typography>
+                  <div>
+                    <button className="accept-btn">Accept</button>
+                    <button className="reject-btn">Reject</button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
