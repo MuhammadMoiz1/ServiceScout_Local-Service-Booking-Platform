@@ -84,8 +84,24 @@ namespace Backend.Controllers
             return Ok(serviceRequest);
         }
 
+        [HttpGet(userCurrent)]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<IEnumerable<ServiceRequestDto>>> GetUserCurrentServiceRequests()
+        {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var serviceRequests = await _context.ServiceRequests
+                .Where(r => r.Iscompleted == false && r.User.Id == currentUserId)
+                .Include(r => r.User)
+                .Select(r => new ServiceRequestDto
+                {
+                    Id = r.Id,
+                })
+                .ToListAsync();
+
+            return Ok(serviceRequests);
+        }
         // POST: api/ServiceRequests
-        
+
         [HttpPost]
         [Authorize(Roles = "User")]
         public async Task<ActionResult<ServiceRequest>> PostServiceRequest(CreateServiceRequestDto requestDto)

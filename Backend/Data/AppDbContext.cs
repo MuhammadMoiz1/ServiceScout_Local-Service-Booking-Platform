@@ -16,6 +16,7 @@ namespace Backend.Data
         public DbSet<ServiceRequest> ServiceRequests { get; set; }
         public DbSet<PendingLog> PendingLogs { get; set; }
         public DbSet<ServiceOrder> ServiceOrders { get; set; }
+        public DbSet<SavedService> SavedServices {  get; set; } 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +24,8 @@ namespace Backend.Data
 
             modelBuilder.Entity<ServiceProviderServiceLink>()
                 .HasKey(link => new { link.ServiceVendorId, link.VendorServiceId }); // Composite key
+            modelBuilder.Entity<SavedService>()
+                .HasKey(link => new { link.ServiceVendorId, link.ServiceRequestId }); // Composite key
         }
     }
 
@@ -49,6 +52,7 @@ namespace Backend.Data
         [JsonIgnore]
         public ICollection<ServiceProviderServiceLink>? ServiceProviderServiceLinks { get; set; } // Nullable
     }
+    
 
     public class ServiceVendor
     {
@@ -77,6 +81,16 @@ namespace Backend.Data
         public int VendorServiceId { get; set; }  // Foreign key for VendorService
         [JsonIgnore]
         public VendorService VendorService { get; set; }  // Navigation property
+    }
+    public class SavedService
+    {
+        public int ServiceVendorId { get; set; }  // Foreign key for ServiceVendor
+        [JsonIgnore]
+        public ServiceVendor ServiceVendor { get; set; }  // Navigation property
+
+        public int ServiceRequestId { get; set; }  // Foreign key for ServiceRequest
+        [JsonIgnore]
+        public ServiceRequest ServiceRequest { get; set; }  // Navigation property
     }
 
     public class ServiceRequest

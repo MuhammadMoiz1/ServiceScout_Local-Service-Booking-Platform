@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {Paper,Stack,Card,CardContent,Typography,Divider,Grid2,Button,CardActionArea,CardMedia} from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import ResponserCard from '../ResponseCard/ResponserCard';
-
+import api from '../../../apiRequests';
+import axios from 'axios';
 
 const Customcard = ()=>{
   
@@ -118,7 +118,16 @@ const Customcard = ()=>{
 };
 
 const CurrentRequests = () => {
-  
+  const [RequestIDs,setRequestIDs]=useState(null);
+  useEffect(async ()=>{
+     try{
+      const response = await api.post("/ServiceRequests",formData);
+      
+     }
+     catch(err){
+
+     }
+  },[])
   return (
     <div>
       
