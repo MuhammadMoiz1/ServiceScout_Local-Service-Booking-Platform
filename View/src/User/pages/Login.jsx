@@ -25,28 +25,18 @@ const Field = styled(TextField)(({ theme }) => ({
   }));
 
 
-function SignIn() {
+function Login() {
+    
   const navigate=useNavigate();
-
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
-    contact: "",
-    cnic: "",
     password: "",
-    confirmPassword: "",
-    area:"",
   });
 
 
   const [errors, setErrors] = useState({
-    name: "",
     email: "",
-    contact: "",
-    cnic: "",
     password: "",
-    confirmPassword: "",
-    area:"",
   });
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -73,22 +63,6 @@ function SignIn() {
     }
   };
 
-  const validate = () => {
-    const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email))
-      newErrors.email = "Valid email is required";
-    if (!formData.contact.trim() || !/^\d{10,15}$/.test(formData.contact))
-      newErrors.contact = "Contact number must be 10-15 digits";
-    if (!formData.cnic.trim() || !/^\d{13}$/.test(formData.cnic))
-      newErrors.cnic = "CNIC must be exactly 13 digits";
-    if (!formData.password.trim() || formData.password.length < 8)
-      newErrors.password = "Password must be at least 8 characters";
-    if (formData.password !== formData.confirmPassword)
-      newErrors.confirmPassword = "Passwords do not match";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; 
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -119,7 +93,7 @@ function SignIn() {
         borderRadius: 3,
         backgroundColor: "white",
         marginBottom:'20px',
-        minHeight:'80vh'
+        minHeight:'50vh'
       }}
     >
       <div style={{display:"flex",alignItems:'center',justifyContent:'center'}}>
@@ -128,7 +102,7 @@ function SignIn() {
         }}/>
       </div>
       <Typography variant="h5" align="center" gutterBottom sx={{ color: "#2196F3",fontWeight:700,marginBottom:'2vh' }}>
-      Start your journey!
+      Welcome Back Login Now!
       </Typography>
       <Box
             component="form"
@@ -136,19 +110,7 @@ function SignIn() {
             sx={{ display: 'flex', flexDirection: 'column', gap: '2.8vh' ,alignItems:'center'}}
         >
             <Field
-              label="Full Name"
-              name="name"
-              fullWidth
-              value={formData.name}
-              onChange={handleChange}
-              error={!!errors.name}
-              helperText={errors.name}
-              variant="outlined"
-             
-            />
-          
-            <Field
-              label="Email"
+              label="Enter Email"
               name="email"
               type="email"
               fullWidth
@@ -156,27 +118,6 @@ function SignIn() {
               onChange={handleChange}
               error={!!errors.email}
               helperText={errors.email}
-              variant="outlined"
-            />
-            <Field
-              label="Contact Number"
-              name="contact"
-              type="tel"
-              fullWidth
-              value={formData.contact}
-              onChange={handleChange}
-              error={!!errors.contact}
-              helperText={errors.contact}
-              variant="outlined"
-            />
-            <Field
-              label="CNIC Number"
-              name="cnic"
-              fullWidth
-              value={formData.cnic}
-              onChange={handleChange}
-              error={!!errors.cnic}
-              helperText={errors.cnic}
               variant="outlined"
             />
           
@@ -191,63 +132,7 @@ function SignIn() {
               helperText={errors.password}
               variant="outlined"
             />
-            <Field
-              label="Confirm Password"
-              name="confirmPassword"
-              type="password"
-              fullWidth
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              error={!!errors.confirmPassword}
-              helperText={errors.confirmPassword}
-              variant="outlined"
-            />
-     <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 2,
-        padding: 2,
-      }}
-    >
-      <Typography
-        variant="body1"
-        sx={{ color: "#616161", fontWeight: "450", textAlign: "center" }}
-      >
-        Allow Access to Your Current Location
-      </Typography>
-      
-      <Button
-        variant="outlined"
-        onClick={getCurrentLocation}
-        sx={{
-          textTransform: "none",
-          fontWeight: '500',
-          padding: '3px 12px',
-          borderRadius: "20px",
-          borderColor: '#f56048',
-          color:'#f56048',
-          // backgroundColor:'#2196F3',
-        }}
-      >
-        Click Here
-      </Button>
-      {formData['area'] && (
-       <Typography variant="body2" sx={{ color: "green" }}>
-       Location Accessed Successfully!
-     </Typography>
-      )}
-      {errors['area'] && (
-        <Typography
-          variant="body2"
-          sx={{ color: "red", mt: 2, textAlign: "center" }}
-        >
-          {errors['area']}
-        </Typography>
-      )}
-    </Box>
+    
 
             <Button
               type="submit"
@@ -268,18 +153,18 @@ function SignIn() {
                 },
               }}
             >
-              sign up
+              Log In
             </Button>
-           <Typography>Already have an account? 
+           <Typography>Don't have an account? 
             <Button
             sx={{textTransform:'none'}}
-            onClick={()=>navigate('/login')}
+            onClick={()=>navigate('/signup')}
             >
-              Click Here </Button>
+              Register Now</Button>
             </Typography>
           </Box>
     </Paper>
   );
 }
 
-export default SignIn;
+export default Login;

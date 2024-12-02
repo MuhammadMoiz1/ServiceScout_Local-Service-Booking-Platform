@@ -13,12 +13,12 @@ export default function ServiceProvider() {
   return (
     <Card className='main-SP-card' sx={{ 
         display: "flex",
-        justifyContent: "space-between", // Ensures image stays on the right
+        justifyContent: "space-between",
         marginRight:'25px',
         marginLeft:'25px',
         alignItems: "center",
         minWidth: "30vw",
-        padding: "10px", // Adds some spacing inside the card
+        padding: "10px", 
         boxShadow: 3,
         marginTop:'20px',
         marginBottom:'20px'
@@ -47,7 +47,7 @@ export default function ServiceProvider() {
                     margin: "0 5px",
                     fontWeight: 500,
                     textTransform: 'none',
-                    backgroundColor:'#f55f4876',
+                    backgroundColor:'#2195f363',
                   }}
                 />
         <Chip
@@ -56,7 +56,7 @@ export default function ServiceProvider() {
                     margin: "0 5px",
                     fontWeight: 500,
                     textTransform: 'none',
-                    backgroundColor:'#f55f4876',
+                    backgroundColor:'#2195f363',
                   }}
                 />        
         </Box>
@@ -70,7 +70,7 @@ export default function ServiceProvider() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#f5f5f5", // Fallback background color
+        backgroundColor: "#f5f5f5", 
       }}
     >
       <img
@@ -80,7 +80,6 @@ export default function ServiceProvider() {
           width: "100%",
           height: "100%",
           objectFit: "scale-down",
-           // Ensures the image covers the container
         }}
       />
     </Box>
