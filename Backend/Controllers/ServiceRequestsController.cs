@@ -57,6 +57,7 @@ namespace Backend.Controllers
                     Price = r.Price,
                     IsCompleted = r.Iscompleted,
                     PostedOn = r.PostedOn,
+                    RequestedTime=r.RequestedTime,
                     Username = r.User.Name,
                     UserId = r.User.Id,
                     ServiceName = r.Service.ServiceName
@@ -215,6 +216,7 @@ namespace Backend.Controllers
         public float Price { get; set; }
         public bool IsCompleted { get; set; }
         public DateTime PostedOn { get; set; }
+        public DateTime RequestedTime {get; set; }
         public string Username { get; set; }
         public int UserId { get; set; }
         public string ServiceName { get; set; }
