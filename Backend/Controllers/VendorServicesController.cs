@@ -16,7 +16,7 @@ namespace Backend.Controllers
             _context = context;
         }
 
-        // Get all VendorServices
+        // Get all VendorServices /api/VendorServices/
         [HttpGet]
         public async Task<ActionResult<IEnumerable<VendorService>>> GetVendorServices()
         {

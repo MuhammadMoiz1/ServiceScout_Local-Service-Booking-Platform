@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Data;
+using Microsoft.AspNetCore.Authorization;
+using Backend.Authentication;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
@@ -26,7 +29,33 @@ namespace Backend.Controllers
 
             return Ok(serviceOrders);
         }
+        [HttpGet("VendorOrders")]
+        [Authorize(Roles = "Vendor")]
+        public async Task<ActionResult<IEnumerable<ServiceOrderDto>>> GetVendorServiceOrders()
+        {
+            var currentVendorId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
+            var serviceOrders = await _context.ServiceOrders
+                .Where(so => so.VendorId == currentVendorId) 
+                .Include(so => so.Request)                  
+                    .ThenInclude(r => r.User)               
+                .Include(so => so.Request.Service)          
+                .Select(so => new ServiceOrderDto
+                {
+                    OrderId = so.Id,
+                    RequestId = so.RequestId,
+                    Status = so.Status,
+                    ServiceName = so.Request.Service.ServiceName,
+                    Description = so.Request.Description,
+                    Area = so.Request.Area,
+                    PostedOn = so.Request.PostedOn,
+                    Price = (decimal)so.Request.Price,
+                    UserName = so.Request.User.Name
+                })
+                .ToListAsync();
+
+            return Ok(serviceOrders);
+        }
         // GET: api/ServiceOrders/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceOrder>> GetServiceOrder(int id)
@@ -151,4 +180,17 @@ namespace Backend.Controllers
     {
         public int Id { get; set; }
     }
+    public class ServiceOrderDto
+    {
+        public int OrderId { get; set; }
+        public int RequestId { get; set; }
+        public string Status { get; set; }
+        public string ServiceName { get; set; }
+        public string Description { get; set; }
+        public string Area { get; set; }
+        public DateTime PostedOn { get; set; }
+        public decimal Price { get; set; }
+        public string UserName { get; set; }
+    }
+
 }
