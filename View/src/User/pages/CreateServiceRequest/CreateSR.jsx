@@ -47,7 +47,7 @@ const navigate =useNavigate();
         })
     )
     try {
-      console.log(localStorage.getItem('Token'))  
+      console.log(localStorage.getItem('token'))  
       const response = await api.post("/ServiceRequests",formData);
       console.log("Service Request Created:", response.data);
       setErrmessage('Service created successfully');

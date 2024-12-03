@@ -92,7 +92,7 @@ namespace Backend.Controllers
             var serviceRequests = await _context.ServiceRequests
                 .Where(r => r.Iscompleted == false && r.User.Id == currentUserId)
                 .Include(r => r.User)
-                .Select(r => new ServiceRequestDto
+                .Select(r => new ServiceIDRequestDto
                 {
                     Id = r.Id,
                 })
@@ -236,5 +236,9 @@ namespace Backend.Controllers
         public string Username { get; set; }
         public int UserId { get; set; }
         public string ServiceName { get; set; }
+    }
+    public class ServiceIDRequestDto
+    {
+        public int Id { get; set; }
     }
 }

@@ -8,9 +8,11 @@ import ResponserCard from '../ResponseCard/ResponserCard';
 import api from '../../../apiRequests';
 import axios from 'axios';
 
-const Customcard = ()=>{
+const Customcard = (props)=>{
   
   const [open, setOpen] = React.useState(false);
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -19,12 +21,35 @@ const Customcard = ()=>{
   const handleClose = () => {
     setOpen(false);
   };
-
+  
+  const [RequestData,setRequestData]=useState(null);
+  useEffect(() => {
+    console.log(localStorage.getItem('token'))
+    const fetchData = async () => {
+      try {
+        const response = await api.get(`/ServiceRequests/${props.id}`);
+        const dateObject = new Date(response.data?.requestedTime);
+        if (!isNaN(dateObject)) {
+          const options = { timeZone: "Asia/Karachi", hour12: true };
+          setDate(dateObject.toLocaleDateString("en-US", options)); // Format as local date
+          setTime(dateObject.toLocaleTimeString("en-US", options)); // Format as local time
+        } else {
+          console.error("Invalid Date format:", response.requestedTime);
+        }
+        setRequestData(response.data); 
+        
+      } catch (err) {
+        console.error("Error fetching data:", err.message);
+      }
+    };
+  
+    fetchData();
+  }, []);
   
 
     return(
     <>
-      <Card sx={{ minWidth: "85%",maxWidth: "85%",margin: "auto",marginTop:'20px', boxShadow: 3, borderRadius: 2 }}>
+      <Card key={props.id} sx={{ minWidth: "85%",maxWidth: "85%",margin: "auto",marginTop:'20px', boxShadow: 3, borderRadius: 2 }}>
         <CardActionArea
         onClick={handleClickOpen}
         >
@@ -43,7 +68,7 @@ const Customcard = ()=>{
               textAlign: "center",
             }}
           >
-            Kitchen Cabinets Repairing
+            {RequestData?.description}
           </Typography>
   
           <Divider sx={{ mb: 2 }} />
@@ -57,7 +82,9 @@ const Customcard = ()=>{
                 Time:
               </Typography>
               <Typography variant="body1" color="text.primary">
-                Dec 5, 2024, 10:00 AM
+                {
+                  date+" "+time
+                }
               </Typography>
             </Grid2>
             <Grid2 size={{ xs: 12, md: 4 }}>
@@ -68,7 +95,7 @@ const Customcard = ()=>{
                 Price:
               </Typography>
               <Typography variant="body1" color="text.primary">
-                $150
+                {RequestData?.price}
               </Typography>
             </Grid2>
             <Grid2 size={{ xs: 12, md: 4 }}>
@@ -79,7 +106,7 @@ const Customcard = ()=>{
                 Responses:
               </Typography>
               <Typography variant="body1" color="text.primary">
-                15 responses
+                15
               </Typography>
             </Grid2>
   
@@ -119,15 +146,18 @@ const Customcard = ()=>{
 
 const CurrentRequests = () => {
   const [RequestIDs,setRequestIDs]=useState(null);
-  useEffect(async ()=>{
-     try{
-      const response = await api.post("/ServiceRequests",formData);
-      
-     }
-     catch(err){
-
-     }
-  },[])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get("/ServiceRequests/userCurrent");
+        setRequestIDs(response.data); 
+      } catch (err) {
+        console.error("Error fetching data:", err.message);
+      }
+    };
+  
+    fetchData(); // Call the async function
+  }, []);
   return (
     <div>
       
@@ -145,8 +175,12 @@ const CurrentRequests = () => {
       }}
       >
      <Stack>
-     <Customcard /> 
-     <Customcard />
+      {
+        RequestIDs&&RequestIDs.map((requestId)=>(
+          <Customcard id={requestId.id}/> 
+        )
+         )
+     }
       </Stack>
       </Paper>
 
