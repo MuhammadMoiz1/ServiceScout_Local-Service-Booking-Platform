@@ -54,8 +54,7 @@ const ServiceRequestForm = () => {
       ...prev,
       serviceId: 1,
     }));
-    try {
-      console.log(localStorage.getItem('token'))  
+    try { 
       const response = await api.post("/ServiceRequests",formData);
       console.log("Service Request Created:", response.data);
       setErrmessage("Service created successfully");
