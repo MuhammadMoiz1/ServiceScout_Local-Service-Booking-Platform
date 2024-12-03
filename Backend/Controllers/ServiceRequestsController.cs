@@ -20,6 +20,7 @@ namespace Backend.Controllers
 
         // GET: api/ServiceRequests
         [HttpGet]
+
         public async Task<ActionResult<IEnumerable<ServiceRequestDto>>> GetServiceRequests()
         {
             var serviceRequests = await _context.ServiceRequests
@@ -69,19 +70,25 @@ namespace Backend.Controllers
 
         // GET: api/ServiceRequests/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<ServiceRequest>> GetServiceRequest(int id)
         {
             var serviceRequest = await _context.ServiceRequests
                                                 .Include(r => r.User)
                                                 .Include(r => r.Service)
                                                 .FirstOrDefaultAsync(r => r.Id == id);
+            var serviceRequestAmount = await _context.PendingLogs
+                                       .Include(r => r.Request)
+                                       .Where(r => r.Request.Id == id)
+                                       .CountAsync();
+
 
             if (serviceRequest == null)
             {
                 return NotFound();
             }
 
-            return Ok(serviceRequest);
+            return Ok(new { serviceRequest=serviceRequest,Amount = serviceRequestAmount});
         }
 
         //[HttpGet("Completed")]
@@ -120,6 +127,7 @@ namespace Backend.Controllers
             var serviceRequests = await _context.ServiceRequests
                 .Where(r => r.Iscompleted == false && r.User.Id == currentUserId)
                 .Include(r => r.User)
+                .OrderByDescending(r => r.PostedOn)
                 .Select(r => new ServiceIDRequestDto
                 {
                     Id = r.Id,
