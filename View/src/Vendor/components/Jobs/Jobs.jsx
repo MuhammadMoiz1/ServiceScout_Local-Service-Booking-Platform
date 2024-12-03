@@ -55,14 +55,50 @@ export default function IconLabelTabs() {
   const [selectedRequest, setSelectedRequest] = React.useState(null);
   const [vendorPrice, setVendorPrice] = React.useState("");
 
-  // Open interest dialog
+  const [favorites, setFavorites] = React.useState([]);
+  const [isFavoritesLoading, setIsFavoritesLoading] = React.useState(true);
+  const [favoritesError, setFavoritesError] = React.useState(null);
+
+  const [nearby, setNearby] = React.useState([]);
+  const [isNearbyLoading, setIsNearbyLoading] = React.useState(true);
+  const [nearbyError, setNearbyError] = React.useState(null);
+
+  const [directRequests, setDirect] = React.useState([]);
+  const [isDirectLoading, setIsDirectLoading] = React.useState(true);
+  const [DirectError, setDirectError] = React.useState(null);
+
   const handleInterested = (request) => {
     setSelectedRequest(request);
-    setVendorPrice(request.price.toString()); // Initialize with original price
+    setVendorPrice(request.price.toString());
     setOpenDialog(true);
   };
 
-  // Close dialog
+  const handleSave = async (item) => {
+    try {
+      const response = await api.post("/SavedServices", {
+        serviceRequestId: item.id,
+      });
+
+      enqueueSnackbar("Service saved successfully", { variant: "success" });
+    } catch (error) {
+      enqueueSnackbar(error.response?.data || "Failed to save service", {
+        variant: "error",
+      });
+    }
+  };
+
+  const handleRemoveSavedService = async (serviceRequestId) => {
+    try {
+      await api.delete(`/SavedServices/${serviceRequestId}`);
+
+      setFavorites(favorites.filter((item) => item.id !== serviceRequestId));
+
+      enqueueSnackbar("Service removed successfully", { variant: "success" });
+    } catch (error) {
+      enqueueSnackbar("Failed to remove saved service", { variant: "error" });
+    }
+  };
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setSelectedRequest(null);
@@ -100,6 +136,34 @@ export default function IconLabelTabs() {
     setValue(newValue);
   };
 
+  const handleAccept = async (requestId, vendorId) => {
+    try {
+      const acceptResponse = await api.put("/ServiceRequests/accept", {
+        Id: requestId,
+        IsCompleted: true,
+      });
+      console.log("Request accepted:", acceptResponse);
+
+      const deleteResponse = await api.delete(
+        `/PendingLogs/Request/${requestId}/Vendor/${vendorId}`
+      );
+      console.log("Pending log deleted:", deleteResponse);
+    } catch (err) {
+      console.error("Error handling accept:", err);
+    }
+  };
+
+  const handleReject = async (requestId, vendorId) => {
+    try {
+      const response = await api.delete(
+        `/ServiceRequests/Reject/${requestId}/${vendorId}`
+      );
+      console.log("Request rejected:", response);
+    } catch (err) {
+      console.error("Error rejecting request:", err);
+    }
+  };
+
   React.useEffect(() => {
     const fetchRecentRequests = async () => {
       try {
@@ -115,76 +179,75 @@ export default function IconLabelTabs() {
     };
 
     if (value === 0) {
-      // Only fetch when Recent tab is active
       fetchRecentRequests();
     }
   }, [value]);
 
-  const directRequests = [
-    {
-      username: "Emily Chen",
-      description: "Need urgent plumbing services for kitchen sink",
-      area: "San Francisco",
-      service: "Plumbing",
-      price: "$180",
-      serviceTime: "2 hours",
-    },
-    {
-      username: "Michael Rodriguez",
-      description: "Electrical wiring repair needed",
-      area: "Seattle",
-      service: "Electrical",
-      price: "$250",
-      serviceTime: "3 hours",
-    },
-  ];
+  React.useEffect(() => {
+    const fetchSavedServices = async () => {
+      try {
+        setIsFavoritesLoading(true);
+        const response = await api.get("/SavedServices");
+        setFavorites(response.data);
+        setIsFavoritesLoading(false);
+      } catch (err) {
+        console.error("Error fetching saved services:", err);
+        setFavoritesError(err);
+        setIsFavoritesLoading(false);
+      }
+    };
 
-  const favorites = [
-    {
-      username: "Bob Johnson",
-      description: "Looking for a landscaper to redesign the backyard.",
-      area: "Miami",
-      service: "Landscaping",
-      price: "$500",
-      serviceTime: "5 hours",
-    },
-    {
-      username: "Alice Brown",
-      description: "Need a cleaner for a deep house cleaning.",
-      area: "San Francisco",
-      service: "Cleaning",
-      price: "$120",
-      serviceTime: "4 hours",
-    },
-  ];
+    if (value === 1) {
+      fetchSavedServices();
+    }
+  }, [value]);
 
-  const nearby = [
-    {
-      username: "Mike Wilson",
-      description: "Looking for a painter to refresh the house exterior.",
-      area: "Chicago",
-      service: "Painting",
-      price: "$350",
-      serviceTime: "6 hours",
-    },
-    {
-      username: "Lisa White",
-      description: "Need a carpenter to fix the kitchen cabinets.",
-      area: "Seattle",
-      service: "Carpentry",
-      price: "$250",
-      serviceTime: "3 hours",
-    },
-  ];
+  React.useEffect(() => {
+    const fetchNearbyRequests = async () => {
+      try {
+        setIsNearbyLoading(true);
+        const response = await api.get("/ServiceRequests/nearby");
+        console.log(response);
+        setNearby(response.data);
+        setIsNearbyLoading(false);
+      } catch (err) {
+        console.error("Error fetching nearby requests:", err);
+        setNearbyError(err);
+        setIsNearbyLoading(false);
+      }
+    };
 
-  // Render loading state
+    if (value === 2) {
+      fetchNearbyRequests();
+    }
+  }, [value]);
+
+  React.useEffect(() => {
+    const fetchDirectRequests = async () => {
+      try {
+        setIsDirectLoading(true);
+        const response = await api.get("/PendingLogs/Vendor-direct");
+        console.log(response);
+        setDirect(response.data);
+        setIsDirectLoading(false);
+      } catch (err) {
+        console.error("Error fetching nearby requests:", err);
+        setDirectError(err);
+        setIsDirectLoading(false);
+      }
+    };
+
+    if (value === 3) {
+      fetchDirectRequests();
+    }
+  }, [value]);
+
   const renderLoading = () => (
     <div style={{ display: "flex", justifyContent: "center", padding: "20px" }}>
       <CircularProgress />
     </div>
   );
 
-  // Render error state
   const renderError = () => (
     <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
       Error loading service requests. Please try again later.
@@ -253,6 +316,14 @@ export default function IconLabelTabs() {
                     }}
                   >
                     <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => handleSave(item)}
+                      style={{ marginRight: "10px" }}
+                    >
+                      Save
+                    </Button>
+                    <Button
                       variant="contained"
                       color="primary"
                       onClick={() => handleInterested(item)}
@@ -267,97 +338,181 @@ export default function IconLabelTabs() {
         </TabPanel>
 
         <TabPanel value={value} index={1} className="tabPanel">
-          {favorites.map((item, index) => (
-            <Card key={index} className="card">
-              <CardContent className="cardContent">
-                <Typography className="cardHeader">{item.username}</Typography>
-                <Typography className="cardDetail">
-                  Description: {item.description}
-                </Typography>
-                <Typography className="cardDetail">
-                  Area: {item.area}
-                </Typography>
-                <Typography className="cardDetail">
-                  Service: {item.service}
-                </Typography>
-                <Typography className="cardPrice">
-                  Price: {item.price}
-                </Typography>
-                <Typography className="cardServiceTime">
-                  Service Time: {item.serviceTime}
-                </Typography>
-                <div className="cardFooter">
-                  <Typography variant="body2">
-                    Posted: {new Date().toLocaleDateString()}
+          {isFavoritesLoading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                padding: "20px",
+              }}
+            >
+              <CircularProgress />
+            </div>
+          ) : favoritesError ? (
+            <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
+              Error loading saved services. Please try again later.
+            </div>
+          ) : favorites.length === 0 ? (
+            <Typography
+              variant="body1"
+              style={{
+                textAlign: "center",
+                padding: "20px",
+                color: "gray",
+              }}
+            >
+              No saved services found
+            </Typography>
+          ) : (
+            favorites.map((item, index) => (
+              <Card key={item.id} className="card">
+                <CardContent className="cardContent">
+                  <Typography className="cardHeader">
+                    {item.username}
                   </Typography>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <Typography className="cardDetail">
+                    Description: {item.description}
+                  </Typography>
+                  <Typography className="cardDetail">
+                    Area: {item.area}
+                  </Typography>
+                  <Typography className="cardDetail">
+                    Service: {item.serviceName}
+                  </Typography>
+                  <Typography className="cardPrice">
+                    Price: ${item.price.toFixed(2)}
+                  </Typography>
+                  <div className="cardFooter">
+                    <Typography variant="body2">
+                      Posted: {new Date(item.postedOn).toLocaleDateString()}
+                    </Typography>
+                    <Button
+                      color="secondary"
+                      onClick={() => handleRemoveSavedService(item.id)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </TabPanel>
 
         <TabPanel value={value} index={2} className="tabPanel">
-          {nearby.map((item, index) => (
-            <Card key={index} className="card">
-              <CardContent className="cardContent">
-                <Typography className="cardHeader">{item.username}</Typography>
-                <Typography className="cardDetail">
-                  Description: {item.description}
-                </Typography>
-                <Typography className="cardDetail">
-                  Area: {item.area}
-                </Typography>
-                <Typography className="cardDetail">
-                  Service: {item.service}
-                </Typography>
-                <Typography className="cardPrice">
-                  Price: {item.price}
-                </Typography>
-                <Typography className="cardServiceTime">
-                  Service Time: {item.serviceTime}
-                </Typography>
-                <div className="cardFooter">
-                  <Typography variant="body2">
-                    Posted: {new Date().toLocaleDateString()}
+          {isNearbyLoading ? (
+            renderLoading()
+          ) : nearbyError ? (
+            renderError()
+          ) : nearby.length === 0 ? (
+            <Typography
+              variant="body1"
+              style={{ textAlign: "center", padding: "20px", color: "gray" }}
+            >
+              No nearby services found
+            </Typography>
+          ) : (
+            nearby.map((item) => (
+              <Card key={item.id} className="card">
+                <CardContent className="cardContent">
+                  <Typography className="cardHeader">
+                    {item.username}
                   </Typography>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <Typography className="cardDetail">
+                    Description: {item.description}
+                  </Typography>
+                  <Typography className="cardDetail">
+                    Area: {item.area}
+                  </Typography>
+                  <Typography className="cardDetail">
+                    Service: {item.serviceName}
+                  </Typography>
+                  <Typography className="cardPrice">
+                    Price: ${item.price.toFixed(2)}
+                  </Typography>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleInterested(item)}
+                    >
+                      Interested
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </TabPanel>
 
         <TabPanel value={value} index={3} className="tabPanel">
-          {directRequests.map((item, index) => (
-            <Card key={index} className="card">
-              <CardContent className="cardContent">
-                <Typography className="cardHeader">{item.username}</Typography>
-                <Typography className="cardDetail">
-                  Description: {item.description}
-                </Typography>
-                <Typography className="cardDetail">
-                  Area: {item.area}
-                </Typography>
-                <Typography className="cardDetail">
-                  Service: {item.service}
-                </Typography>
-                <Typography className="cardPrice">
-                  Price: {item.price}
-                </Typography>
-                <Typography className="cardServiceTime">
-                  Service Time: {item.serviceTime}
-                </Typography>
-                <div className="cardFooter">
-                  <Typography variant="body2">
-                    Posted: {new Date().toLocaleDateString()}
+          {isDirectLoading ? (
+            renderLoading()
+          ) : DirectError ? (
+            renderError()
+          ) : directRequests.length === 0 ? (
+            <Typography
+              variant="body1"
+              style={{ textAlign: "center", padding: "20px", color: "gray" }}
+            >
+              No direct requests rightnow
+            </Typography>
+          ) : (
+            directRequests.map((item, index) => (
+              <Card key={index} className="card">
+                <CardContent className="cardContent">
+                  <Typography className="cardHeader">
+                    {item.username}
                   </Typography>
-                  <div>
-                    <button className="accept-btn">Accept</button>
-                    <button className="reject-btn">Reject</button>
+                  <Typography className="cardDetail">
+                    Description: {item.description}
+                  </Typography>
+                  <Typography className="cardDetail">
+                    Area: {item.area}
+                  </Typography>
+                  <Typography className="cardDetail">
+                    Service: {item.serviceName}
+                  </Typography>
+                  <Typography className="cardPrice">
+                    Price: {item.price}
+                  </Typography>
+                  <Typography className="cardServiceTime">
+                    Service Time: {item.serviceTime}
+                  </Typography>
+                  <div className="cardFooter">
+                    <Typography variant="body2">
+                      Posted: {new Date().toLocaleDateString()}
+                    </Typography>
+                    <div>
+                      <button
+                        className="accept-btn"
+                        onClick={() =>
+                          handleAccept(item.requestId, item.vendorId)
+                        }
+                      >
+                        Accept
+                      </button>
+
+                      <button
+                        className="reject-btn"
+                        onClick={() =>
+                          handleReject(item.requestId, item.vendorId)
+                        }
+                      >
+                        Reject
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))
+          )}
         </TabPanel>
       </div>
       <Dialog

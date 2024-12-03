@@ -87,6 +87,43 @@ namespace Backend.Controllers
             return Ok(pendingLogs);
         }
 
+        // GET: api/PendingLogs/Vendor-direct
+        [HttpGet("Vendor-direct")]
+        [Authorize(Roles = "Vendor")]
+        public async Task<ActionResult<IEnumerable<PendingLogDto>>> GetDirectRequestsForVendor()
+        {
+
+            var currentVendorIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(currentVendorIdString) || !int.TryParse(currentVendorIdString, out int currentVendorId))
+            {
+                return BadRequest(new { Message = "Invalid vendor.", VendorId = currentVendorIdString });
+            }
+
+
+            var pendingLogs = await _context.PendingLogs
+                .Where(pl => pl.VendorId == currentVendorId && pl.Requester== true)
+                .Include(pl => pl.Request)
+                .ThenInclude(r => r.User)
+                .Include(pl => pl.Request.Service)
+                .Select(pl => new PendingLogDto
+                {
+                    RequestId = pl.Request.Id,
+                    Description = pl.Request.Description,
+                    Area = pl.Request.Area,
+                    Price = (decimal)pl.Request.Price,
+                    IsCompleted = pl.Request.Iscompleted,
+                    PostedOn = pl.Request.PostedOn,
+                    Username = pl.Request.User.Name,
+                    UserId = pl.Request.User.Id,
+                    ServiceName = pl.Request.Service.ServiceName,
+                    VendorId = pl.VendorId,
+                    Amount = (decimal)pl.Amount
+                })
+                .ToListAsync();
+
+            return Ok(pendingLogs);
+        }
 
 
 
@@ -202,6 +239,25 @@ namespace Backend.Controllers
 
             return NoContent();
         }
+
+        // DELETE: api/PendingLogs/Request/{requestId}/Vendor/{vendorId}
+        [HttpDelete("Request/{requestId}/Vendor/{vendorId}")]
+        public async Task<IActionResult> DeleteAccepted(int requestId, int vendorId)
+        {
+            var pendingLog = await _context.PendingLogs
+                .FirstOrDefaultAsync(pl => pl.RequestId == requestId && pl.VendorId == vendorId);
+
+            if (pendingLog == null)
+            {
+                return NotFound(new { Message = "Pending log not found." });
+            }
+
+            _context.PendingLogs.Remove(pendingLog);
+            await _context.SaveChangesAsync();
+
+            return NoContent(); 
+        }
+
 
         private bool PendingLogExists(int id)
         {

@@ -67,6 +67,8 @@ namespace Backend.Controllers
             return Ok(serviceRequests);
         }
 
+       
+
         // GET: api/ServiceRequests/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceRequest>> GetServiceRequest(int id)
@@ -83,6 +85,55 @@ namespace Backend.Controllers
 
             return Ok(serviceRequest);
         }
+
+        // GET: api/ServiceRequests/nearby
+        [HttpGet("nearby")]
+        [Authorize(Roles = "Vendor")] 
+        public async Task<ActionResult<IEnumerable<ServiceRequestDto>>> GetNearbyPendingServiceRequests()
+        {
+           
+
+            var currentVendorId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+         
+            var vendor = await _context.ServiceVendors
+                                        .FirstOrDefaultAsync(v => v.Id == currentVendorId);
+
+            if (vendor == null)
+            {
+                return NotFound("Vendor not found.");
+            }
+
+            var vendorArea = vendor.Area; 
+
+          
+            var pendingRequests = await _context.ServiceRequests
+                                                .Where(r => r.Iscompleted == false && r.Area == vendorArea)
+                                                .Include(r => r.User)
+                                                .Include(r => r.Service)
+                                                .Select(r => new ServiceRequestDto
+                                                {
+                                                    Id = r.Id,
+                                                    Description = r.Description,
+                                                    Area = r.Area,
+                                                    Price = r.Price,
+                                                    IsCompleted = r.Iscompleted,
+                                                    PostedOn = r.PostedOn,
+                                                    RequestedTime = r.RequestedTime,
+                                                    Username = r.User.Name,
+                                                    UserId = r.User.Id,
+                                                    ServiceName = r.Service.ServiceName
+                                                })
+                                                .ToListAsync();
+
+            if (!pendingRequests.Any())
+            {
+                return NoContent(); 
+            }
+
+            return Ok(pendingRequests);
+        }
+
 
         //[HttpGet("Completed")]
         //[Authorize(Roles = "Vendor")]
@@ -213,6 +264,27 @@ namespace Backend.Controllers
             return NoContent();
         }
 
+        // PUT: api/ServiceRequests/accept
+        [HttpPut("accept")]
+        public async Task<IActionResult> AcceptServiceRequest([FromBody] AcceptServiceRequestDto requestDto)
+        {
+           
+            var serviceRequest = await _context.ServiceRequests.FindAsync(requestDto.Id);
+            if (serviceRequest == null)
+            {
+                return NotFound(new { Message = "Service request not found." });
+            }
+
+         
+            serviceRequest.Iscompleted = requestDto.IsCompleted;
+
+            // Save the changes to the database
+            _context.Entry(serviceRequest).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return NoContent(); 
+        }
+
         // DELETE: api/ServiceRequests/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteServiceRequest(int id)
@@ -228,6 +300,32 @@ namespace Backend.Controllers
 
             return NoContent();
         }
+
+        // DELETE: api/ServiceRequests/Reject
+        [HttpDelete("Reject/{requestId}/{vendorId}")]
+        public async Task<IActionResult> RejectServiceRequest(int requestId, int vendorId)
+        {
+            var serviceRequest = await _context.ServiceRequests.FindAsync(requestId);
+            if (serviceRequest == null)
+            {
+                return NotFound(new { Message = "Service request not found." });
+            }
+
+            var pendingLog = await _context.PendingLogs
+                .FirstOrDefaultAsync(pl => pl.RequestId == requestId && pl.VendorId == vendorId);
+            if (pendingLog != null)
+            {
+                _context.PendingLogs.Remove(pendingLog);
+            }
+
+        
+            _context.ServiceRequests.Remove(serviceRequest);
+
+            await _context.SaveChangesAsync();
+
+            return NoContent(); 
+        }
+
 
         private bool ServiceRequestExists(int id)
         {
@@ -246,10 +344,16 @@ namespace Backend.Controllers
         public DateTime RequestedTime { get; set; }
     }
 
-    // DTO for updating an existing ServiceRequest
+    
     public class UpdateServiceRequestDto : CreateServiceRequestDto
     {
         public int Id { get; set; }
+    }
+
+    public class AcceptServiceRequestDto
+    {
+        public int Id { get; set; } 
+        public bool IsCompleted { get; set; } = true; 
     }
 
     public class ServiceRequestDto
