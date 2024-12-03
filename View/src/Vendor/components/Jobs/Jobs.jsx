@@ -1,6 +1,7 @@
 import * as React from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+
 import PhoneIcon from "@mui/icons-material/Phone";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import PersonPinIcon from "@mui/icons-material/PersonPin";
@@ -74,13 +75,11 @@ export default function IconLabelTabs() {
       return;
     }
 
-    const vendorId = 1; // Mocked for now
-
     const requestData = {
       RequestId: selectedRequest.id,
-      UserId: selectedRequest.userId, // From selectedRequest
-      VendorId: vendorId, // Mocked for now
-      Amount: parseFloat(vendorPrice), // Ensure vendorPrice is a number
+      UserId: selectedRequest.userId,
+      VendorId: 1,
+      Amount: parseFloat(vendorPrice),
     };
 
     try {

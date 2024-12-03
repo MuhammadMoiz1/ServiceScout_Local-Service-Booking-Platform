@@ -1,54 +1,67 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../Navbar/Navbar";
 import "./ServiceHistory.css";
+import api from "../../../apiRequests";
 
 const ServiceHistory = () => {
-  // Sample data (in real scenario, this would come from backend)
-  const pendingRequests = [
-    {
-      id: 1,
-      userName: "John Doe",
-      service: "Plumbing",
-      description: "Fixing bathroom sink leak",
-      serviceTime: "2 hours",
-      area: "New York",
-      postedOn: "2024-02-15",
-      price: "$120",
-    },
-    {
-      id: 2,
-      userName: "Emma Watson",
-      service: "Electrical",
-      description: "Replacing faulty circuit breaker",
-      serviceTime: "3 hours",
-      area: "Chicago",
-      postedOn: "2024-02-16",
-      price: "$180",
-    },
-  ];
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [completedOrders, setCompletedOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const completedOrders = [
-    {
-      id: 3,
-      userName: "Mike Smith",
-      service: "Painting",
-      description: "Living room wall painting",
-      serviceTime: "5 hours",
-      area: "Los Angeles",
-      postedOn: "2024-01-25",
-      price: "$350",
-    },
-    {
-      id: 4,
-      userName: "Sarah Johnson",
-      service: "Cleaning",
-      description: "Deep house cleaning",
-      serviceTime: "4 hours",
-      area: "San Francisco",
-      postedOn: "2024-02-01",
-      price: "$200",
-    },
-  ];
+  useEffect(() => {
+    const fetchPendingRequests = async () => {
+      try {
+        const pendingResponse = await api.get("/PendingLogs/Vendor");
+        console.log(pendingResponse);
+        console.log("Response Headers", pendingResponse.headers);
+        const formattedPendingRequests = pendingResponse.data.map((item) => ({
+          id: item.requestId,
+          userName: item.username,
+          service: item.serviceName,
+          description: item.description,
+          serviceTime: "N/A",
+          area: item.area,
+          postedOn: item.postedOn,
+          price: `$${item.amount}`,
+        }));
+        setPendingRequests(formattedPendingRequests);
+      } catch (error) {
+        console.error("Error fetching pending requests:", error);
+      }
+    };
+
+    const fetchCompletedOrders = async () => {
+      try {
+        const completedResponse = await api.get("/ServiceOrders/VendorOrders"); // Using the API instance
+        const formattedCompletedOrders = completedResponse.data.map((item) => ({
+          id: item.orderId,
+          userName: item.userName,
+          service: item.serviceName,
+          description: item.description,
+          serviceTime: "N/A",
+          area: item.area,
+          postedOn: item.postedOn,
+          price: `$${item.price}`,
+          status: item.status,
+        }));
+        setCompletedOrders(formattedCompletedOrders);
+      } catch (error) {
+        console.error("Error fetching completed orders:", error);
+      }
+    };
+
+    const fetchData = async () => {
+      setLoading(true);
+      await Promise.all([fetchPendingRequests(), fetchCompletedOrders()]);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -80,9 +93,8 @@ const ServiceHistory = () => {
                 </div>
                 <div className="card-footer">
                   <span className="posted-date">
-                    Posted on: {request.postedOn}
+                    Posted on: {new Date(request.postedOn).toLocaleDateString()}
                   </span>
-                  <button className="action-button">View Details</button>
                 </div>
               </div>
             </div>
@@ -115,9 +127,8 @@ const ServiceHistory = () => {
                 </div>
                 <div className="card-footer">
                   <span className="posted-date">
-                    Posted on: {order.postedOn}
+                    Posted on: {new Date(order.postedOn).toLocaleDateString()}
                   </span>
-                  <button className="action-button">View Receipt</button>
                 </div>
               </div>
             </div>

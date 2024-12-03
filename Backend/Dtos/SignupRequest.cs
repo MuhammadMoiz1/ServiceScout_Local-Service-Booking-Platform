@@ -8,5 +8,6 @@ namespace Backend.Dtos
         public string Email { get; set; }
         public string Password { get; set; }
         public string ContactInfo { get; set; }
+        public List<int> ServiceIds { get; set; }
     }
 }

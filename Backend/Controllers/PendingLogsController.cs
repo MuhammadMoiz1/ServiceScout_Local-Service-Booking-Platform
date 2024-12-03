@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Data;
+using Microsoft.AspNetCore.Authorization;
+using Backend.Authentication;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
@@ -46,14 +49,65 @@ namespace Backend.Controllers
             return Ok(pendingLog);
         }
 
+        // GET: api/PendingLogs/Vendor
+        [HttpGet("Vendor")]
+        [Authorize(Roles = "Vendor")]
+        public async Task<ActionResult<IEnumerable<PendingLogDto>>> GetPendingLogsForVendor()
+        {
+            
+            var currentVendorIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(currentVendorIdString) || !int.TryParse(currentVendorIdString, out int currentVendorId))
+            {
+                return BadRequest(new { Message = "Invalid vendor.", VendorId = currentVendorIdString });
+            }
+
+          
+            var pendingLogs = await _context.PendingLogs
+                .Where(pl => pl.VendorId == currentVendorId)  
+                .Include(pl => pl.Request)  
+                .ThenInclude(r => r.User)  
+                .Include(pl => pl.Request.Service)  
+                .Select(pl => new PendingLogDto
+                {
+                    RequestId = pl.Request.Id,
+                    Description = pl.Request.Description,
+                    Area = pl.Request.Area,
+                    Price = (decimal)pl.Request.Price,
+                    IsCompleted = pl.Request.Iscompleted,
+                    PostedOn = pl.Request.PostedOn,
+                    Username = pl.Request.User.Name,
+                    UserId = pl.Request.User.Id,
+                    ServiceName = pl.Request.Service.ServiceName,
+                    VendorId = pl.VendorId,
+                    Amount = (decimal)pl.Amount 
+                })
+                .ToListAsync();
+
+            return Ok(pendingLogs);
+        }
+
+
+
+
         // POST: api/PendingLogs
         [HttpPost]
         public async Task<ActionResult<PendingLog>> PostPendingLog(CreatePendingLogDto pendingLogDto)
         {
+
+            var vendorId =  User.FindFirstValue(ClaimTypes.NameIdentifier); 
+
+            if (string.IsNullOrEmpty(vendorId))
+            {
+                return Unauthorized("Vendor not logged in.");
+            }
+
+            var providerId = int.Parse(vendorId);
+
             // Validate if RequestId, UserId, and VendorId are valid
             var serviceRequest = await _context.ServiceRequests.FindAsync(pendingLogDto.RequestId);
             var user = await _context.Users.FindAsync(pendingLogDto.UserId);
-            var vendor = await _context.ServiceVendors.FindAsync(pendingLogDto.VendorId);
+            var vendor = await _context.ServiceVendors.FindAsync(providerId);
 
             if (serviceRequest == null)
             {
@@ -75,7 +129,7 @@ namespace Backend.Controllers
             {
                 RequestId = pendingLogDto.RequestId,
                 UserId = pendingLogDto.UserId,
-                VendorId = pendingLogDto.VendorId,
+                VendorId = providerId,
                 Amount = pendingLogDto.Amount
             };
 
@@ -163,7 +217,20 @@ namespace Backend.Controllers
         public int VendorId { get; set; }
         public float Amount { get; set; }
     }
-
+    public class PendingLogDto
+    {
+        public int RequestId { get; set; }
+        public string Description { get; set; }
+        public string Area { get; set; }
+        public decimal Price { get; set; }
+        public bool IsCompleted { get; set; }
+        public DateTime PostedOn { get; set; }
+        public string Username { get; set; }
+        public int UserId { get; set; }
+        public string ServiceName { get; set; }
+        public int VendorId { get; set; }
+        public decimal Amount { get; set; } 
+    }
     // DTO for updating an existing PendingLog
     public class UpdatePendingLogDto : CreatePendingLogDto
     {

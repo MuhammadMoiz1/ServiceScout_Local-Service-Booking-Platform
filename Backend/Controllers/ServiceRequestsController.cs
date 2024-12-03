@@ -84,6 +84,34 @@ namespace Backend.Controllers
             return Ok(serviceRequest);
         }
 
+        //[HttpGet("Completed")]
+        //[Authorize(Roles = "Vendor")]
+        //public async Task<ActionResult<IEnumerable<ServiceRequestDto>>> GetVendorCompletedServiceRequests()
+        //{
+        //    var currentVendorId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+        //    var serviceRequests = await _context.ServiceRequests
+        //        .Where(r => r.VendorId == currentVendorId && r.Iscompleted)
+        //        .Include(r => r.User)
+        //        .Include(r => r.Service)
+        //        .Select(r => new ServiceRequestDto
+        //        {
+        //            Id = r.Id,
+        //            Description = r.Description,
+        //            Area = r.Area,
+        //            Price = r.Price,
+        //            IsCompleted = r.Iscompleted,
+        //            PostedOn = r.PostedOn,
+        //            Username = r.User.Name,
+        //            UserId = r.User.Id,
+        //            ServiceName = r.Service.ServiceName
+        //        })
+        //        .ToListAsync();
+
+        //    return Ok(serviceRequests);
+        //}
+
+
         [HttpGet("userCurrent")]
         [Authorize(Roles = "User")]
         public async Task<ActionResult<IEnumerable<ServiceRequestDto>>> GetUserCurrentServiceRequests()
