@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../../../apiRequests";
-
 import Navbar from "../../components/Navbar/Navbar";
 
 const ServiceRequestForm = () => {
@@ -56,7 +55,7 @@ const ServiceRequestForm = () => {
       serviceId: 1,
     }));
     try {
-      console.log(localStorage.getItem("Token"));
+      console.log(localStorage.getItem("token"));
       const response = await api.post("/ServiceRequests", formData);
       console.log("Service Request Created:", response.data);
       setErrmessage("Service created successfully");
