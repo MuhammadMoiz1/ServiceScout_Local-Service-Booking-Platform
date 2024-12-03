@@ -32,7 +32,7 @@ const ServiceHistory = () => {
 
     const fetchCompletedOrders = async () => {
       try {
-        const completedResponse = await api.get("/ServiceOrders/VendorOrders"); // Using the API instance
+        const completedResponse = await api.get("/ServiceOrders/VendorOrders");
         const formattedCompletedOrders = completedResponse.data.map((item) => ({
           id: item.orderId,
           userName: item.userName,

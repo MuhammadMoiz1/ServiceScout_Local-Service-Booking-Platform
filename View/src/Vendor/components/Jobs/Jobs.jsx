@@ -144,6 +144,18 @@ export default function IconLabelTabs() {
       });
       console.log("Request accepted:", acceptResponse);
 
+      const serviceOrderResponse = await api.post("/ServiceOrders", {
+        RequestId: requestId,
+        VendorId: vendorId,
+        Status: "Accepted",
+      });
+      console.log("Service order created:", serviceOrderResponse);
+
+      const incrementResponse = await api.patch(
+        `/ServiceVendors/${vendorId}/IncrementOrders`
+      );
+      console.log("Vendor order count updated:", incrementResponse);
+
       const deleteResponse = await api.delete(
         `/PendingLogs/Request/${requestId}/Vendor/${vendorId}`
       );

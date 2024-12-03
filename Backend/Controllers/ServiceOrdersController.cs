@@ -105,6 +105,28 @@ namespace Backend.Controllers
             return CreatedAtAction(nameof(GetServiceOrder), new { id = serviceOrder.Id }, serviceOrder);
         }
 
+        // PATCH: api/ServiceVendors/{id}/IncrementOrders
+        [HttpPatch("{id}/IncrementOrders")]
+        public async Task<IActionResult> IncrementVendorOrders(int id)
+        {
+            // Find the vendor by ID
+            var serviceVendor = await _context.ServiceVendors.FindAsync(id);
+
+            if (serviceVendor == null)
+            {
+                return NotFound("Vendor not found.");
+            }
+
+            // Increment the TotalOrders
+            serviceVendor.TotalOrders++;
+
+            // Save changes to the database
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Total orders updated successfully.", TotalOrders = serviceVendor.TotalOrders });
+        }
+
+
         // PUT: api/ServiceOrders/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutServiceOrder(int id, UpdateServiceOrderDto serviceOrderDto)
