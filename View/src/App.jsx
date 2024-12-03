@@ -8,6 +8,8 @@ import { Route, Routes } from "react-router-dom";
 import Login from "./User/pages/Login";
 import ServiceRequestForm from "./User/pages/CreateServiceRequest/CreateSR";
 import ResponserCard from "./User/components/ResponseCard/ResponserCard";
+import VendorSignupForm from "./Vendor/Pages/VendorSignin";
+import VendorLogin from "./Vendor/Pages/VendorLogin";
 
 const App = () => {
   return (
@@ -48,10 +50,26 @@ const App = () => {
           }
         />
         <Route
+          path="/Vendorsignup"
+          element={
+            <div>
+              <VendorSignupForm />
+            </div>
+          }
+        />
+        <Route
           path="/login"
           element={
             <div>
               <Login />
+            </div>
+          }
+        />
+        <Route
+          path="/Vendorlogin"
+          element={
+            <div>
+              <VendorLogin />
             </div>
           }
         />
@@ -67,12 +85,11 @@ const App = () => {
           path="/responser"
           element={
             <div>
-              <ResponserCard/>
+              <ResponserCard />
             </div>
           }
         />
       </Routes>
-      
     </div>
   );
 };
