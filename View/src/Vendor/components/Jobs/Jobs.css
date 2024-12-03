@@ -10,7 +10,7 @@
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  min-height: calc(100vh - 120px); /* Adjust based on your layout */
+  min-height: calc(100vh - 120px);
 }
 
 .card {
@@ -18,7 +18,7 @@
   border-radius: 12px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
-  max-width: 500px; /* Limit card width */
+  max-width: 500px;
 }
 
 .card:hover {

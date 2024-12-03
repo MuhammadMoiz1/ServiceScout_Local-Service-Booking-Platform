@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Backend.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Backend.Data;
+using Backend.Authentication;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
@@ -43,22 +46,27 @@ namespace Backend.Controllers
             return Ok(link);
         }
 
-        // GET: api/ServiceProviderServiceLinks/{serviceProviderId}
-        [HttpGet("{serviceProviderId}")]
-        public async Task<ActionResult<IEnumerable<ServiceProviderServiceLink>>> GetServiceProviderLinksForVendor(int serviceProviderId)
+        // GET: api/ServiceProviderServiceLinks
+        [HttpGet("vendor")]
+        public async Task<ActionResult<IEnumerable<VendorServiceDto>>> GetServiceProviderLinksForVendor()
         {
-            var links = await _context.ServiceProviderServiceLinks
-                                       .Include(link => link.ServiceVendor)
-                                       .Include(link => link.VendorService)
-                                       .Where(link => link.ServiceVendorId == serviceProviderId)
-                                       .ToListAsync();
+            var currentVendorId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            if (links == null || !links.Any())
+            var services = await _context.ServiceProviderServiceLinks
+                .Where(link => link.ServiceVendorId == currentVendorId)
+                .Select(link => new VendorServiceDto
+                {
+                    ServiceId = link.VendorService.Id,
+                    ServiceName = link.VendorService.ServiceName
+                })
+                .ToListAsync();
+
+            if (!services.Any())
             {
-                return NotFound();
+                return NoContent();
             }
 
-            return Ok(links);
+            return Ok(services);
         }
 
         // POST: api/ServiceProviderServiceLinks
@@ -97,6 +105,12 @@ namespace Backend.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        public class VendorServiceDto
+        {
+            public int ServiceId { get; set; }
+            public string ServiceName { get; set; }
         }
     }
 }
