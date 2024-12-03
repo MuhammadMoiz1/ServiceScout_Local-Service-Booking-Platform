@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Backend.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Backend.Authentication;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
@@ -20,6 +23,22 @@ namespace Backend.Controllers
         public async Task<ActionResult<IEnumerable<ServiceVendor>>> GetServiceVendors()
         {
             return await _context.ServiceVendors.ToListAsync();
+        }
+
+        [HttpGet("responsers/{id}")]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<IEnumerable<ServiceVendor>>> ResponserId(int id)
+        {
+            var serviceRequests = await _context.PendingLogs
+                                       .Include(r => r.Request)
+                                       .Where(r => r.Request.Id == id)
+                                       .Select(r => new ResponserIdDto
+                                       {
+                                           Id = r.VendorId,
+                                       })
+                                       .ToListAsync();
+
+            return Ok(serviceRequests);
         }
 
         // Get a serviceVendor "/api/ServiceVendors/2"
@@ -94,5 +113,9 @@ namespace Backend.Controllers
         {
             return _context.ServiceVendors.Any(e => e.Id == id);
         }
+    }
+    public class ResponserIdDto
+    {
+        public int Id { get; set; }
     }
 }
