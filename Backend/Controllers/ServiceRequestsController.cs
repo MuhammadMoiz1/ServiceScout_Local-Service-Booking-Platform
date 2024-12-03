@@ -57,6 +57,7 @@ namespace Backend.Controllers
                     Price = r.Price,
                     IsCompleted = r.Iscompleted,
                     PostedOn = r.PostedOn,
+                    RequestedTime=r.RequestedTime,
                     Username = r.User.Name,
                     UserId = r.User.Id,
                     ServiceName = r.Service.ServiceName
@@ -111,6 +112,22 @@ namespace Backend.Controllers
         //}
 
 
+        [HttpGet("userCurrent")]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<IEnumerable<ServiceRequestDto>>> GetUserCurrentServiceRequests()
+        {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var serviceRequests = await _context.ServiceRequests
+                .Where(r => r.Iscompleted == false && r.User.Id == currentUserId)
+                .Include(r => r.User)
+                .Select(r => new ServiceRequestDto
+                {
+                    Id = r.Id,
+                })
+                .ToListAsync();
+
+            return Ok(serviceRequests);
+        }
         // POST: api/ServiceRequests
 
         [HttpPost]
@@ -243,6 +260,7 @@ namespace Backend.Controllers
         public float Price { get; set; }
         public bool IsCompleted { get; set; }
         public DateTime PostedOn { get; set; }
+        public DateTime RequestedTime {get; set; }
         public string Username { get; set; }
         public int UserId { get; set; }
         public string ServiceName { get; set; }

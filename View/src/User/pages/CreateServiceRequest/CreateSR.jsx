@@ -12,7 +12,11 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+<<<<<<< HEAD
 import api from "../../../apiRequests";
+=======
+import api from '../../../apiRequests';
+>>>>>>> 1933e4c39b04e3ee9f9a4171cd3517bb2b71e0af
 import Navbar from "../../components/Navbar/Navbar";
 
 const ServiceRequestForm = () => {
