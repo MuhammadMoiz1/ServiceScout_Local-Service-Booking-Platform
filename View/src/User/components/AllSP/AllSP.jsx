@@ -18,7 +18,7 @@ const AllSP = () => {
         }
       };
       fetchServices();
-    });
+    },[]);
     useEffect(() => {
         if (searchQuery) {
           setFilteredData(
@@ -49,7 +49,7 @@ const AllSP = () => {
         <SearchIcon style={{ fill: "#2E3D49" }} />
       </IconButton>
       </div>
-      <Grid2 container spacing={3} sx={{ flexGrow: 1 }}>
+      <Grid2 container spacing={3} sx={{ flexGrow: 1}}>
 
         {filteredData.map((data)=>(
           <Grid2 size={{ xs: 12, md: 6,lg:4 }} >

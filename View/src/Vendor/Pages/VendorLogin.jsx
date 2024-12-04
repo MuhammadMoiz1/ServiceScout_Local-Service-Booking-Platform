@@ -78,7 +78,7 @@ function VendorLogin() {
       localStorage.setItem("token", response.data.token);
 
       console.log("Vendor Login Successful:", response.data);
-      navigate("/vendor");
+      navigate("/vendor/home");
     } catch (err) {
       console.error("Vendor Login Failed:", err.response?.data || err.message);
       setErrmessage(

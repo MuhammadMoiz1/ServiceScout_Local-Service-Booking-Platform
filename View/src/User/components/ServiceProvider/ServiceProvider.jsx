@@ -12,9 +12,23 @@ import {  useNavigate } from 'react-router-dom';
 export default function ServiceProvider(props) {
   const theme = useTheme();
   const Navigate=useNavigate();
+  const [services,setServices]=React.useState([]);
+  React.useEffect(()=>{
+    const fetchServices=async ()=>{
+       try{
+            const res= await api.get(`/ServiceProviderServiceLinks/${props.data.id}`)
+            setServices(res.data)
+
+       }
+       catch(err){
+        console.log(err)
+       }
+    }
+    fetchServices();
+  },[])
   const [data,setData]=React.useState(props.data);
   const handleclick= ()=>{
-    Navigate('/newRequest',{ state: { id: props.data.id } })
+    Navigate('/user/newRequest',{ state: { id: props.data.id } })
     
   }
 
@@ -61,25 +75,24 @@ export default function ServiceProvider(props) {
                 {data.totalOrders}
               </Typography> 
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center',gap:'2',ml:'5px' }}>
-        <Chip
-                  label={'Programmer'}
-                  sx={{
-                    margin: "0 5px",
-                    fontWeight: 500,
-                    textTransform: 'none',
-                    backgroundColor:'#2195f363',
-                  }}
-                />
-        <Chip
-                  label={'Ai Specialist'}
-                  sx={{
-                    margin: "0 5px",
-                    fontWeight: 500,
-                    textTransform: 'none',
-                    backgroundColor:'#2195f363',
-                  }}
-                />        
+        <Box sx={{ display: 'flex', alignItems: 'center',gap:'2',ml:'5px',maxWidth:'50vw',flexWrap: 'wrap'}}>
+           {
+            services&&services.map((service)=>(
+              <Chip
+              label={service.serviceName}
+              sx={{
+                margin: "0 5px",
+                fontWeight: 500,
+                textTransform: 'none',
+                backgroundColor:'#2195f363',
+                marginTop:'1px'
+              }}
+            />
+            
+            )
+            )
+           }
+     
         </Box>
         <Button variant='contained' sx={{backgroundColor:'#f56048',marginTop:'20px',marginLeft:'20px',padding: '3px 0px',width:'170px',borderRadius:'50px'}}
         onClick={handleclick}

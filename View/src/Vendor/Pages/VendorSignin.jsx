@@ -48,6 +48,18 @@ const StyledSelect = styled(Select)(({ theme }) => ({
     borderColor: "#1976D2",
   },
 }));
+const karachiTowns = [
+  { id: 1, name: "Korangi" },
+  { id: 2, name: "Gulshan-e-Iqbal" },
+  { id: 3, name: "Saddar" },
+  { id: 4, name: "Karachi Saddar" },
+  { id: 5, name: "Lyari" },
+  { id: 6, name: "Korangi" },
+  { id: 7, name: "Kemari" },
+  { id: 8, name: "Malir" },
+  { id: 9, name: "Bahria Town" },
+  { id: 10, name: "Faisal Colony" },
+];
 
 function VendorSignUp() {
   const navigate = useNavigate();
@@ -266,6 +278,24 @@ function VendorSignUp() {
           </StyledSelect>
         </FormControl>
         <Field
+          select
+          label="Area"
+          name="area"
+          fullWidth
+          value={formData.area}
+          onChange={handleChange}
+          error={!!errors.area}
+          helperText={errors.area}
+          variant="outlined"
+          required
+        >
+          {karachiTowns.map((town) => (
+            <MenuItem key={town.id} value={town.name}>
+              {town.name}
+            </MenuItem>
+          ))}
+        </Field>
+        <Field
           label="Password"
           name="password"
           type="password"
@@ -287,6 +317,7 @@ function VendorSignUp() {
           helperText={errors.confirmPassword}
           required
         />
+
         <Button
           type="submit"
           variant="contained"

@@ -111,7 +111,7 @@ function SignIn() {
     try {
       const response = await axios.post('http://localhost:5150/api/Auth/register', data); // Replace with your API URL
       console.log('Response:', response.data);
-      navigate("/login", { state: { successMessage: "Account created successfully! Please log in." } });
+      navigate("/user/login", { state: { successMessage: "Account created successfully! Please log in." } });
     } catch (error) {
       console.error('Error submitting form:', error.response || error.message);
       setErrmessage(error.response.data);

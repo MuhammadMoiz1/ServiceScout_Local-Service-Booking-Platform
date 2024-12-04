@@ -4,15 +4,17 @@ import logo from '../../../assets/logo.png';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [menu, setMenu] = useState('Home');
   const [close, setClose] = useState(false);
   const [hamClass, setHamClass] = useState('navbar-menu');
-
+  const navigate=useNavigate();
   const handleLogoutClick = () => {
     localStorage.removeItem("token");
     console.log('Log out clicked'); // Example log for debugging
+    navigate('/');
   };
 
   return (
@@ -21,27 +23,28 @@ const Navbar = () => {
 
       <ul className={hamClass}>
         <NavLink
-          to="/"
+          to="/user/home"
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => { setClose(false); setHamClass('navbar-menu'); }}
         >
           Home
         </NavLink>
         <NavLink
-          to="/newRequest"
+          to="/user/newRequest"
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => { setClose(false); setHamClass('navbar-menu'); }}
         >
           New Request
         </NavLink>
         <NavLink
-          to="/service-history"
+          to="/user/service-history"
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => { setClose(false); setHamClass('navbar-menu'); }}
         >
           Service History
         </NavLink>
         <NavLink
+          to="/"
           style={{ display: 'none' }}
           onClick={() => setMenu('SignIn')}
           className={menu === 'SignIn ham-sign' ? 'active' : 'ham-sign'}

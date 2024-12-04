@@ -152,7 +152,7 @@ export default function IconLabelTabs() {
       console.log("Service order created:", serviceOrderResponse);
 
       const incrementResponse = await api.patch(
-        `/ServiceVendors/${vendorId}/IncrementOrders`
+        `/ServiceOrders/${vendorId}/IncrementOrders`
       );
       console.log("Vendor order count updated:", incrementResponse);
 

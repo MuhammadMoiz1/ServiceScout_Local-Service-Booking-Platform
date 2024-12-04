@@ -18,7 +18,7 @@ const Welcome = () => {
       <Button
       className='cta'
       variant='outlined'
-      
+      onClick={() => (window.location.href = "/user/newRequest")}
       >
       Request a Service Now!
       </Button>

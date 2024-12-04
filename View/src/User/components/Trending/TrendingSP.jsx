@@ -1,9 +1,11 @@
-import React from 'react';
+import React ,{useState,useEffect} from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './TrendingSP.css';
 import ServiceProvider from '../ServiceProvider/ServiceProvider';
+import api from '../../../apiRequests';
+import { Button, Typography, Box } from "@mui/material";
 
 const CustomPrevArrow = (props) => {
     const { className, style, onClick } = props;
@@ -27,6 +29,20 @@ const CustomPrevArrow = (props) => {
     );
   };
 const TrendingSP = () => {
+  const [data,setData]=useState([]);
+  useEffect(()=>{
+      const fetchData=async ()=>{
+        try{
+          const res=await api.get("/ServiceVendors/trending-vendors");
+          console.log(res?.data)
+          setData(res?.data);
+        }
+        catch(err){
+          console.log(err);
+        }
+      }
+      fetchData();
+  },[]);
     const settings = {
         dots: true,
         infinite: true,
@@ -51,15 +67,42 @@ const TrendingSP = () => {
         ]
       };
        
-  return (
-    <div className="slider-container">
-      <Slider {...settings}>
-      {/* Your slider content here */}
-      <div><ServiceProvider/></div>  
-      <div><ServiceProvider/></div> 
-    </Slider>
-    </div>
-  )
+      return (
+        <div className="slider-container">
+          {data && data.length > 1 ? (
+            <Slider {...settings}>
+              {data.map((d) => (
+                <div key={d.id}>
+                  <ServiceProvider data={d} />
+                </div>
+              ))}
+            </Slider>
+          ) : data && data.length === 1 ? (
+            <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
+              {data.map((d) => (
+                <div key={d.id}>
+                  <ServiceProvider data={d} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <Box
+              sx={{
+                textAlign: "center",
+                padding: "20px",
+                backgroundColor: "#f9f9f9",
+                borderRadius: "8px",
+                marginTop: "20px",
+              }}
+            >
+              <Typography variant="h6" sx={{ marginBottom: "10px", color: "#555" }}>
+                No vendors near you.
+              </Typography>
+            </Box>
+          )}
+        </div>
+      );
+      
 }
 
 export default TrendingSP;

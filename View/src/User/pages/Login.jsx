@@ -76,7 +76,7 @@ function Login() {
         localStorage.setItem("token", response.data.token);
   
         console.log("Login Successful:", response.data);
-        navigate('/');
+        navigate('/user/home');
       } catch (err) {
         console.error("Login Failed:", err.response?.data || err.message);
         // setError(err.response?.data || "Login failed. Please try again.");

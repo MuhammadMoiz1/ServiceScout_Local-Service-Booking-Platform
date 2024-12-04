@@ -35,7 +35,7 @@ const MainPage = () => {
       </Typography>
       <CurrentRequests/>
       </div>
-      {/* <div style={{minHeight:'60vh',marginTop:'40px'}}>
+      <div style={{minHeight:'60vh',marginTop:'40px'}}>
       <Typography
         variant="h4"
         className='sections'
@@ -45,8 +45,8 @@ const MainPage = () => {
       </Typography>
       <FavouriteSP/>
       
-      </div> */}
-      {/* <div style={{minHeight:'60vh'}}>
+      </div>
+      <div style={{minHeight:'60vh'}}>
       <Typography
         variant="h4"
         className='sections'
@@ -54,8 +54,8 @@ const MainPage = () => {
       >
         Top Service Providers Near You
       </Typography>
-      {/* <TrendingSP/> */}
-      {/* </div> */} 
+      <TrendingSP/>
+      </div>
       <div style={{minHeight:'55vh',marginTop:'30px'}}>
       <Typography
         variant="h4"

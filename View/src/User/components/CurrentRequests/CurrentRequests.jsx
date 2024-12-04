@@ -6,6 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import ResponserCard from '../ResponseCard/ResponserCard';
 import api from '../../../apiRequests';
+// import 
 import axios from 'axios';
 
 const PopOut= (props)=>{
@@ -216,19 +217,37 @@ const CurrentRequests = () => {
       >
      <Stack>
       {
-        RequestIDs&&RequestIDs.map((requestId)=>(
+        RequestIDs&&RequestIDs.length > 0 ? (RequestIDs.map((requestId)=>(
           <Customcard id={requestId.id}/> 
         )
          )
-     }
+     ):(
+      
+      <div style={{display:"flex",alignItems:'center',justifyContent:'center',paddingTop:'10px'}}>
+      <Typography variant="h6" sx={{ marginBottom: "10px", color: "#555" }}>
+        No Current Request.
+      
+      <Button
+        onClick={() => (window.location.href = "/user/newRequest")}
+        variant='outlined'
+        sx={{
+          border:0
+        }}
+      >
+        Request a Service Now!
+      </Button>
+      </Typography>
+      </div>
+     )}
       </Stack>
+    
       </Paper>
-
+    
       
   
     </div>
-  )
-}
+  );
+};
 
 export default CurrentRequests;
 

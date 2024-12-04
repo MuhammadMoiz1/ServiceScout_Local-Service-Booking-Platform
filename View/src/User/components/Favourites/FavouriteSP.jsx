@@ -5,6 +5,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import './FavouriteSP.css';
 import ServiceProvider from '../ServiceProvider/ServiceProvider';
 import api from '../../../apiRequests';
+import { Button, Typography, Box } from "@mui/material";
 
 const CustomPrevArrow = (props) => {
     const { className, style, onClick } = props;
@@ -30,11 +31,11 @@ const CustomPrevArrow = (props) => {
 const FavouriteSP = () => {
   const [data,setData]=useState([]);
   useEffect(()=>{
-      const fetchData=()=>{
+      const fetchData=async ()=>{
         try{
-          const res=api.get("/ServiceVendors/user-vendors");
-          console.log(res.data)
-          setData(res.data);
+          const res=await api.get("/ServiceVendors/user-vendors");
+          // console.log(res?.data)
+          setData(res?.data);
         }
         catch(err){
           console.log(err);
@@ -47,7 +48,7 @@ const FavouriteSP = () => {
         infinite: true,
         speed: 500,
         slidesToShow: 2,
-        slidesToScroll: 1,
+        slidesToScroll: 2,
         prevArrow: <CustomPrevArrow />,
         nextArrow: <CustomNextArrow />,
         responsive: [
@@ -66,19 +67,41 @@ const FavouriteSP = () => {
         ]
       };
        
-  return (
-    <div className="slider-container">
-      <Slider {...settings}>
-      {/* Your slider content here */}
-      {data?.map((d)=>(
-          
-           <div><ServiceProvider data={d}/></div> 
-        )
-         )}
-      
-    </Slider>
-    </div>
-  )
+      return (
+        <div className="slider-container">
+          {data && data.length > 1 ? (
+            <Slider {...settings}>
+              {data.map((d) => (
+                <div key={d.id}>
+                  <ServiceProvider data={d} />
+                </div>
+              ))}
+            </Slider>
+          ) : data && data.length === 1 ? (
+            <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
+              {data.map((d) => (
+                <div key={d.id}>
+                  <ServiceProvider data={d} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <Box
+              sx={{
+                textAlign: "center",
+                padding: "20px",
+                backgroundColor: "#f9f9f9",
+                borderRadius: "8px",
+                marginTop: "20px",
+              }}
+            >
+              <Typography variant="h6" sx={{ marginBottom: "10px", color: "#555" }}>
+                No Previous Service Providers .
+              </Typography>
+            </Box>
+          )}
+        </div>
+      );
 }
 
 export default FavouriteSP;
