@@ -22,8 +22,43 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ServiceVendor>>> GetServiceVendors()
         {
-            return await _context.ServiceVendors.ToListAsync();
+            return await _context.ServiceVendors.
+                OrderByDescending(v => v.Rating).
+                ToListAsync();
         }
+        // DTO for ServiceVendor
+        public class ServiceVendorDto
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Area { get; set; }
+            public decimal Rating { get; set; }
+            public int TotalOrders { get; set; }
+        }
+
+        // Controller method
+        //[HttpGet("user-vendors")]
+        //[Authorize(Roles = "User")]
+        //public async Task<ActionResult<IEnumerable<ServiceVendorDto>>> GetVendorsForUser()
+        //{
+        //    var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+        //    var vendorsForUser = await _context.ServiceOrders
+        //        .Where(so => so.Request.UserId == currentUserId)
+        //        .GroupBy(so => so.Vendor)
+        //        .Select(g => new ServiceVendorDto
+        //        {
+        //            Id = g.Key.Id,
+        //            Name = g.Key.Name,
+        //            Area = g.Key.Area,
+        //            Rating = g.Key.Rating,
+        //            TotalOrders = g.Key.TotalOrders,
+        //        })
+        //        .OrderByDescending(v => v.Rating)
+        //        .ToListAsync();
+
+        //    return Ok(vendorsForUser);
+        //}
 
         [HttpGet("responsers/{id}")]
         [Authorize(Roles = "User")]

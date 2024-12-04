@@ -67,8 +67,8 @@ namespace Backend.Controllers
             return Ok(new AuthResponse { Token = token, Role = "Vendor" });
         }
 
-        [HttpPost("signup")]
-        public async Task<IActionResult> SignupUser([FromBody] SignupRequest request)
+        [HttpPost("register")]
+        public async Task<IActionResult> SignupUser([FromBody] SignupRequestUser request)
         {
             if (_context.Users.Any(u => u.Email == request.Email))
                 return BadRequest("Email is already in use.");

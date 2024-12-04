@@ -48,6 +48,25 @@ namespace Backend.Controllers
 
             return Ok(pendingLog);
         }
+        [HttpGet("{requestId}/{vendorId}")]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<pendingPriceDto>> GetPrice(int vendorId,int requestId)
+        {
+            var pendingLog = await _context.PendingLogs
+           .Where(pl => pl.RequestId == requestId && pl.VendorId == vendorId) // Add filtering first
+           .Select(pl => new pendingPriceDto
+            {
+            Amount = pl.Amount
+            })
+           .FirstOrDefaultAsync();
+
+            if (pendingLog == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(pendingLog);
+        }
 
         // GET: api/PendingLogs/Vendor
         [HttpGet("Vendor")]
@@ -176,7 +195,55 @@ namespace Backend.Controllers
 
             return CreatedAtAction(nameof(GetPendingLog), new { id = pendingLog.Id }, pendingLog);
         }
+        [HttpPost("directUser")]
+        public async Task<ActionResult<PendingLog>> PostDirectPendingLog(CreateDirectPendingLogDto pendingLogDto)
+        {
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var UserId = int.Parse(userId);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("Vendor not logged in.");
+            }
+
+
+            // Validate if RequestId, UserId, and VendorId are valid
+            var serviceRequest = await _context.ServiceRequests.FindAsync(pendingLogDto.RequestId);
+            var user = await _context.Users.FindAsync(UserId);
+            var vendor = await _context.ServiceVendors.FindAsync(pendingLogDto.VendorId);
+
+            if (serviceRequest == null)
+            {
+                return BadRequest("Invalid RequestId.");
+            }
+
+            if (user == null)
+            {
+                return BadRequest("Invalid UserId.");
+            }
+
+            if (vendor == null)
+            {
+                return BadRequest("Invalid VendorId.");
+            }
+
+            // Create a new PendingLog from the DTO
+            var pendingLog = new PendingLog
+            {
+                RequestId = pendingLogDto.RequestId,
+                UserId = UserId,
+                VendorId = pendingLogDto.VendorId,
+                Amount = pendingLogDto.Amount,
+                Requester= true,
+                
+            };
+
+            // Add the new PendingLog to the database
+            _context.PendingLogs.Add(pendingLog);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetPendingLog), new { id = pendingLog.Id }, pendingLog);
+        }
         // PUT: api/PendingLogs/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPendingLog(int id, UpdatePendingLogDto pendingLogDto)
@@ -242,6 +309,7 @@ namespace Backend.Controllers
 
         // DELETE: api/PendingLogs/Request/{requestId}/Vendor/{vendorId}
         [HttpDelete("Request/{requestId}/Vendor/{vendorId}")]
+        [Authorize(Roles = "User,Vendor")]
         public async Task<IActionResult> DeleteAccepted(int requestId, int vendorId)
         {
             var pendingLog = await _context.PendingLogs
@@ -273,6 +341,13 @@ namespace Backend.Controllers
         public int VendorId { get; set; }
         public float Amount { get; set; }
     }
+    public class CreateDirectPendingLogDto
+    {
+        public int RequestId { get; set; }
+        public int VendorId { get; set; }
+        public float Amount { get; set; }
+        public bool requester { get; set; }
+    }
     public class PendingLogDto
     {
         public int RequestId { get; set; }
@@ -291,5 +366,9 @@ namespace Backend.Controllers
     public class UpdatePendingLogDto : CreatePendingLogDto
     {
         public int Id { get; set; }
+    }
+    public class pendingPriceDto
+    {   
+        public float Amount { get; set; }
     }
 }
