@@ -285,6 +285,7 @@ namespace Backend.Controllers
 
          
             serviceRequest.Iscompleted = requestDto.IsCompleted;
+            serviceRequest.Price= requestDto.Price;
 
             // Save the changes to the database
             _context.Entry(serviceRequest).State = EntityState.Modified;
@@ -362,6 +363,7 @@ namespace Backend.Controllers
     {
         public int Id { get; set; } 
         public bool IsCompleted { get; set; } = true; 
+        public float Price { get; set; }
     }
 
     public class ServiceRequestDto
