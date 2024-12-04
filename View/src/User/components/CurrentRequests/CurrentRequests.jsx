@@ -8,36 +8,96 @@ import ResponserCard from '../ResponseCard/ResponserCard';
 import api from '../../../apiRequests';
 import axios from 'axios';
 
+const PopOut= (props)=>{
+  const [responsersIds,setResponserIds]=useState(null);
+  useEffect(()=>{
+    const fetchData = async () => {
+      try {
+        const response = await api.get(`ServiceVendors/responsers/${props.id}`);
+        setResponserIds(response.data);
+      } catch (err) {
+        console.error("Error fetching data:", err.message);
+      }
+    };
+  
+    fetchData();
+
+
+  },[])
+
+  const handleClose = () => {
+    props.setOpen(false);
+  };
+  return(
+    <React.Fragment>
+      <Dialog
+        open={props.open}
+        onClose={handleClose}
+        scroll='paper'
+        aria-labelledby="scroll-dialog-title"
+        
+      >
+        <DialogTitle id="scroll-dialog-title">Responses</DialogTitle>
+        <DialogContent dividers={scroll === 'paper'} sx={{
+          minWidth:'45vw',
+          minHeight:'50vh',
+        }}>
+          {
+          responsersIds && responsersIds.length > 0 ? (
+         responsersIds.map((responser) => (
+         <ResponserCard key={responser.id} id={responser.id} />
+         ))
+      ) : (
+        <Typography variant='subtitle1'>No Response Yet</Typography>
+      )
+     }
+          
+          
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
+
+  );
+
+
+}
+
+
 const Customcard = (props)=>{
   
   const [open, setOpen] = React.useState(false);
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
+  const [datetime, setDatetime] = useState("");
+  const [amount,setAmount]=useState(0);
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  
   
   const [RequestData,setRequestData]=useState(null);
   useEffect(() => {
-    console.log(localStorage.getItem('token'))
     const fetchData = async () => {
       try {
         const response = await api.get(`/ServiceRequests/${props.id}`);
-        const dateObject = new Date(response.data?.requestedTime);
-        if (!isNaN(dateObject)) {
-          const options = { timeZone: "Asia/Karachi", hour12: true };
-          setDate(dateObject.toLocaleDateString("en-US", options)); // Format as local date
-          setTime(dateObject.toLocaleTimeString("en-US", options)); // Format as local time
-        } else {
-          console.error("Invalid Date format:", response.requestedTime);
-        }
-        setRequestData(response.data); 
-        
+        const dateString=response.data?.serviceRequest.requestedTime;
+        const [datePart, timePart] = dateString.split("T");
+
+        let [hours, minutes] = timePart.slice(0, 5).split(":"); // Extract hours and minutes
+        let period = "AM";
+        hours = parseInt(hours, 10); // Convert hours to a number
+        if (hours >= 12) {
+          period = "PM";
+          if (hours > 12) hours -= 12; // Convert 13+ hours to 12-hour format
+        } else if (hours === 0) {
+           hours = 12; // Handle midnight
+          }
+          setDatetime(`${datePart} ${hours}:${minutes} ${period}`);
+        setRequestData(response.data.serviceRequest); 
+        setAmount(response.data.amount);
       } catch (err) {
         console.error("Error fetching data:", err.message);
       }
@@ -83,7 +143,7 @@ const Customcard = (props)=>{
               </Typography>
               <Typography variant="body1" color="text.primary">
                 {
-                  date+" "+time
+                  datetime
                 }
               </Typography>
             </Grid2>
@@ -106,7 +166,7 @@ const Customcard = (props)=>{
                 Responses:
               </Typography>
               <Typography variant="body1" color="text.primary">
-                15
+                {amount}
               </Typography>
             </Grid2>
   
@@ -115,27 +175,7 @@ const Customcard = (props)=>{
         </CardActionArea>
       </Card> 
 
-      <React.Fragment>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        scroll='paper'
-        aria-labelledby="scroll-dialog-title"
-        
-      >
-        <DialogTitle id="scroll-dialog-title">Responses</DialogTitle>
-        <DialogContent dividers={scroll === 'paper'} sx={{
-          minWidth:'45vw',
-          minHeight:'50vh',
-        }}>
-          <ResponserCard/>
-          <ResponserCard/> 
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Close</Button>
-        </DialogActions>
-      </Dialog>
-    </React.Fragment>
+      <PopOut open={open} setOpen={setOpen} id={props.id}/>
 
 
     </>
