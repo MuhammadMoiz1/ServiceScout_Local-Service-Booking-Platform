@@ -167,6 +167,39 @@ namespace Backend.Controllers
             return NoContent();
         }
 
+        [HttpPost("rate")]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> RateVendor(RatingDto ratingDto)
+        {
+            var serviceOrder = await _context.ServiceOrders
+                .Include(so => so.Vendor)
+                .FirstOrDefaultAsync(so => so.RequestId == ratingDto.RequestId && so.VendorId == ratingDto.VendorId);
+
+            if (serviceOrder == null)
+            {
+                return NotFound("Service order not found.");
+            }
+
+            // Update vendor rating
+            var vendor = serviceOrder.Vendor;
+            if (vendor != null)
+            {
+                // Calculate and update vendor's rating
+                vendor.Rating = (vendor.Rating * vendor.TotalOrders + ratingDto.Rating) / (vendor.TotalOrders + 1);  // Add +1 to TotalOrders for new rating
+                vendor.TotalOrders++;  // Increment the total orders to include this new rating
+
+                // Change the ServiceOrder status to "Rated"
+                serviceOrder.Status = "Rated";  // Set status to "Rated" after rating
+
+                // Save changes to the database
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok("Rating submitted successfully.");
+        }
+
+
+
         // DELETE: api/ServiceOrders/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteServiceOrder(int id)
@@ -214,5 +247,13 @@ namespace Backend.Controllers
         public decimal Price { get; set; }
         public string UserName { get; set; }
     }
+
+    public class RatingDto
+    {
+        public int VendorId { get; set; }
+        public int RequestId { get; set; }
+        public int Rating { get; set; } // Assuming 1-5 scale
+    }
+
 
 }
