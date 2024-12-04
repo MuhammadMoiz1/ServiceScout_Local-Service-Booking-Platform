@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextField, Button,Box, Typography, Paper,styled,Snackbar,Alert} from "@mui/material";
+import { TextField, Button,Box, Typography, Paper,styled,Snackbar,Alert,MenuItem} from "@mui/material";
 import logo from '../../assets/logo.png';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
@@ -24,7 +24,18 @@ const Field = styled(TextField)(({ theme }) => ({
       color: '#2196F3', 
     },
   }));
-
+  const karachiTowns = [
+    { id: 1, name: "Korangi" },
+    { id: 2, name: "Gulshan-e-Iqbal" },
+    { id: 3, name: "Saddar" },
+    { id: 4, name: "Karachi Saddar" },
+    { id: 5, name: "Lyari" },
+    { id: 6, name: "Korangi" },
+    { id: 7, name: "Kemari" },
+    { id: 8, name: "Malir" },
+    { id: 9, name: "Bahria Town" },
+    { id: 10, name: "Faisal Colony" },
+  ];
 
 function SignIn() {
   const navigate=useNavigate();
@@ -58,30 +69,7 @@ function SignIn() {
 
     setOpen(false);
   };
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-            console.log(`${position.coords.latitude},${position.coords.longitude}`)
-          setFormData((prev) => ({
-            ...prev,
-            ['area']:`${position.coords.latitude},${position.coords.longitude}`
-          }));
-        },
-        (err) => {
-          setErrors((prev) => ({
-            ...prev,
-            ['area']: err.message,
-          }))  
-        }
-      );
-    } else {
-        setErrors({
-            ...prev,
-            ['area']: 'Geolocation is not supported by this browser.',
-          })   
-    }
-  };
+ 
 
   const validate = () => {
     const newErrors = {};
@@ -119,9 +107,9 @@ function SignIn() {
         password: formData.password,
         contactInfo: formData.contact
       }
-    
+    console.log(data)
     try {
-      const response = await axios.post('http://localhost:5150/api/Auth/signup', data); // Replace with your API URL
+      const response = await axios.post('http://localhost:5150/api/Auth/register', data); // Replace with your API URL
       console.log('Response:', response.data);
       navigate("/login", { state: { successMessage: "Account created successfully! Please log in." } });
     } catch (error) {
@@ -243,53 +231,24 @@ function SignIn() {
               variant="outlined"
               required
             />
-     <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 2,
-        padding: 2,
-      }}
-    >
-      <Typography
-        variant="body1"
-        sx={{ color: "#616161", fontWeight: "450", textAlign: "center" }}
-      >
-        Allow Access to Your Current Location
-      </Typography>
-      
-      <Button
-        variant="outlined"
-        onClick={getCurrentLocation}
-        sx={{
-          textTransform: "none",
-          fontWeight: '500',
-          padding: '3px 12px',
-          borderRadius: "20px",
-          borderColor: '#f56048',
-          color:'#f56048',
-          // backgroundColor:'#2196F3',
-        }}
-        
-      >
-        Click Here
-      </Button>
-      {formData['area'] && (
-       <Typography variant="body2" sx={{ color: "green" }}>
-       Location Accessed Successfully!
-     </Typography>
-      )}
-      {errors['area'] && (
-        <Typography
-          variant="body2"
-          sx={{ color: "red", mt: 2, textAlign: "center" }}
+             <Field
+          select
+          label="Area"
+          name="area"
+          fullWidth
+          value={formData.area}
+          onChange={handleChange}
+          error={!!errors.area}
+          helperText={errors.area}
+          variant="outlined"
+          required
         >
-          {errors['area']}
-        </Typography>
-      )}
-    </Box>
+          {karachiTowns.map((town) => (
+            <MenuItem key={town.id} value={town.name}>
+              {town.name}
+            </MenuItem>
+          ))}
+        </Field>
 
             <Button
               type="submit"

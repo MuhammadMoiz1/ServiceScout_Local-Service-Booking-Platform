@@ -6,9 +6,19 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import StarIcon from '@mui/icons-material/Star';
 import { Button, Chip } from '@mui/material';
+import api from '../../../apiRequests';
+import {  useNavigate } from 'react-router-dom';
 
-export default function ServiceProvider() {
+export default function ServiceProvider(props) {
   const theme = useTheme();
+  const Navigate=useNavigate();
+  const [data,setData]=React.useState(props.data);
+  const handleclick= ()=>{
+    Navigate('/newRequest',{ state: { id: props.data.id } })
+    
+  }
+
+
 
   return (
     <Card className='main-SP-card' sx={{ 
@@ -26,7 +36,7 @@ export default function ServiceProvider() {
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <CardContent sx={{ flex: '1 0 auto' }}>
           <Typography component="div" variant="h5">
-            Muhammad Moiz
+            {data.name}
           </Typography> 
         </CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1,ml:'5px' }}>
@@ -37,7 +47,7 @@ export default function ServiceProvider() {
                 Rating:
               </Typography>
               <Typography variant="body1" color="text.primary">
-                4.5 <StarIcon sx={{fontSize:'18px',color:'#FFD700'}}/>
+                {data.rating} <StarIcon sx={{fontSize:'18px',color:'#FFD700'}}/>
               </Typography> 
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1,ml:'5px' }}>
@@ -48,7 +58,7 @@ export default function ServiceProvider() {
                 Services Provided:
               </Typography>
               <Typography variant="body1" color="text.primary">
-                300 
+                {data.totalOrders}
               </Typography> 
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center',gap:'2',ml:'5px' }}>
@@ -71,7 +81,9 @@ export default function ServiceProvider() {
                   }}
                 />        
         </Box>
-        <Button variant='contained' sx={{backgroundColor:'#f56048',marginTop:'20px',marginLeft:'20px',padding: '3px 0px',width:'170px',borderRadius:'50px'}}>
+        <Button variant='contained' sx={{backgroundColor:'#f56048',marginTop:'20px',marginLeft:'20px',padding: '3px 0px',width:'170px',borderRadius:'50px'}}
+        onClick={handleclick}
+        >
           Request Service
         </Button>
       </Box>

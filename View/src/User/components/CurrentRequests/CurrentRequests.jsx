@@ -45,7 +45,7 @@ const PopOut= (props)=>{
           {
           responsersIds && responsersIds.length > 0 ? (
          responsersIds.map((responser) => (
-         <ResponserCard key={responser.id} id={responser.id} />
+         <ResponserCard key={responser.id} id={responser.id} requestId={props.id}/>
          ))
       ) : (
         <Typography variant='subtitle1'>No Response Yet</Typography>

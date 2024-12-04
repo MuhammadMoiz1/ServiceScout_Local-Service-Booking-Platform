@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   TextField,
@@ -14,25 +13,56 @@ import {
 import { useNavigate } from "react-router-dom";
 import api from "../../../apiRequests";
 import Navbar from "../../components/Navbar/Navbar";
+import { useLocation } from "react-router-dom";
 
 const ServiceRequestForm = () => {
+const location = useLocation();
+const [vendorId,setVendorId]=useState(null)
+    useEffect(()=>{
+      if(location.state){
+      setVendorId(location.state?.id);
+      
+      }
+    },[])  
   const [open, setOpen] = React.useState(false);
   const [errmessage, setErrmessage] = useState("");
   const [intense, setIntense] = useState("error");
-  const services = [
-    { value: "cleaning", label: "Home Cleaning" },
-    { value: "plumbing", label: "Plumbing Services" },
-    { value: "electrical", label: "Electrical Repair" },
-    { value: "painting", label: "Painting" },
-    { value: "gardening", label: "Gardening" },
-  ];
+  const [services, setServices] = useState([]);
   const navigate = useNavigate();
+
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
     setOpen(false);
   };
+
+  // Add Karachi Towns Array
+  const karachiTowns = [
+    { id: 1, name: "Korangi" },
+    { id: 2, name: "Gulshan-e-Iqbal" },
+    { id: 3, name: "Saddar" },
+    { id: 4, name: "Karachi Saddar" },
+    { id: 5, name: "Lyari" },
+    { id: 6, name: "Korangi" },
+    { id: 7, name: "Kemari" },
+    { id: 8, name: "Malir" },
+    { id: 9, name: "Bahria Town" },
+    { id: 10, name: "Faisal Colony" },
+  ];
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const res = await api.get("/VendorServices");
+        setServices(res.data);
+      } catch (err) {
+        console.log(`Error fetching services: ${err}`);
+      }
+    };
+    fetchServices();
+  }, []);
+
   const [formData, setFormData] = useState({
     serviceId: "",
     description: "",
@@ -46,23 +76,30 @@ const ServiceRequestForm = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
+    // console.log(formData);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormData((prev) => ({
-      ...prev,
-      serviceId: 1,
-    }));
-<<<<<<< HEAD
-    try { 
-      const response = await api.post("/ServiceRequests",formData);
-=======
+    const { id, ...dataToSend } = formData;
+    // console.log(dataToSend);
+
     try {
-      console.log(localStorage.getItem("token"));
-      const response = await api.post("/ServiceRequests", formData);
->>>>>>> aa3090a957dd5b0d2643b0429f45da20368b7066
+      const response = await api.post("/ServiceRequests", dataToSend);
+
       console.log("Service Request Created:", response.data);
+   
+      if (vendorId){
+        
+        const data={
+               requestId:response.data.id,
+               vendorId: vendorId,
+               amount:response.data.price,
+               requester:true
+        }
+        const res= await api.post('/PendingLogs/directUser',data);
+        console.log(res);
+      }
       setErrmessage("Service created successfully");
       setIntense("success");
       setOpen(true);
@@ -141,9 +178,31 @@ const ServiceRequestForm = () => {
                     },
                   }}
                 >
-                  {services.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
+                  {services.map((service) => (
+                    <MenuItem key={service.id} value={service.id}>
+                      {service.serviceName}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  select
+                  label="Select Area"
+                  name="area" // This binds to formData.area
+                  value={formData.area}
+                  onChange={handleChange}
+                  variant="outlined"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "12px",
+                    },
+                  }}
+                >
+                  {karachiTowns.map((town) => (
+                    <MenuItem key={town.id} value={town.name}>
+                      {town.name}
                     </MenuItem>
                   ))}
                 </TextField>
@@ -157,21 +216,6 @@ const ServiceRequestForm = () => {
                   onChange={handleChange}
                   multiline
                   rows={4}
-                  variant="outlined"
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "12px",
-                    },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Area"
-                  name="area"
-                  value={formData.area}
-                  onChange={handleChange}
                   variant="outlined"
                   sx={{
                     "& .MuiOutlinedInput-root": {

@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './FavouriteSP.css';
 import ServiceProvider from '../ServiceProvider/ServiceProvider';
+import api from '../../../apiRequests';
 
 const CustomPrevArrow = (props) => {
     const { className, style, onClick } = props;
@@ -27,6 +28,20 @@ const CustomPrevArrow = (props) => {
     );
   };
 const FavouriteSP = () => {
+  const [data,setData]=useState([]);
+  useEffect(()=>{
+      const fetchData=()=>{
+        try{
+          const res=api.get("/ServiceVendors/user-vendors");
+          console.log(res.data)
+          setData(res.data);
+        }
+        catch(err){
+          console.log(err);
+        }
+      }
+      fetchData();
+  },[]);
     const settings = {
         dots: true,
         infinite: true,
@@ -55,8 +70,12 @@ const FavouriteSP = () => {
     <div className="slider-container">
       <Slider {...settings}>
       {/* Your slider content here */}
-      <div><ServiceProvider/></div>  
-      <div><ServiceProvider/></div> 
+      {data?.map((d)=>(
+          
+           <div><ServiceProvider data={d}/></div> 
+        )
+         )}
+      
     </Slider>
     </div>
   )
