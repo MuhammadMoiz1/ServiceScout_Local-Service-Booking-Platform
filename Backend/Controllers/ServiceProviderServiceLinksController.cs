@@ -45,6 +45,26 @@ namespace Backend.Controllers
 
             return Ok(link);
         }
+        [HttpGet("{serviceProviderId}")]
+        public async Task<ActionResult<IEnumerable<VendorServicesDto>>> GetServiceProviderServices(int serviceProviderId)
+        {
+            var links = await _context.ServiceProviderServiceLinks
+                .Include(link => link.VendorService) // Include the related VendorService to access ServiceName
+                .Where(x => x.ServiceVendorId == serviceProviderId)
+                .Select(link => new VendorServicesDto
+                {
+                    ServiceName = link.VendorService.ServiceName // Select only ServiceName
+                })
+                .ToListAsync();
+
+            if (!links.Any())
+            {
+                return NotFound("No services found for the given service provider.");
+            }
+
+            return Ok(links);
+        }
+
 
         // GET: api/ServiceProviderServiceLinks
         [HttpGet("vendor")]
@@ -112,5 +132,9 @@ namespace Backend.Controllers
             public int ServiceId { get; set; }
             public string ServiceName { get; set; }
         }
+    }
+    public class VendorServicesDto
+    {
+        public string ServiceName { get; set; }
     }
 }

@@ -50,6 +50,7 @@ namespace Backend.Controllers
                 .Where(r => r.Iscompleted == false)  
                 .Include(r => r.User)
                 .Include(r => r.Service)
+                .OrderByDescending(r => r.PostedOn)
                 .Select(r => new ServiceRequestDto
                 {
                     Id = r.Id,

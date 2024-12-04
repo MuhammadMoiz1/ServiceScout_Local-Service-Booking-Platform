@@ -20,10 +20,12 @@ namespace Backend.Controllers
 
         // Get ServiceVendors
         [HttpGet]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<IEnumerable<ServiceVendor>>> GetServiceVendors()
         {
             return await _context.ServiceVendors.
                 OrderByDescending(v => v.Rating).
+                ThenByDescending(v => v.TotalOrders).
                 ToListAsync();
         }
         // DTO for ServiceVendor
@@ -36,30 +38,58 @@ namespace Backend.Controllers
             public int TotalOrders { get; set; }
         }
 
-        // Controller method
-        //[HttpGet("user-vendors")]
-        //[Authorize(Roles = "User")]
-        //public async Task<ActionResult<IEnumerable<ServiceVendorDto>>> GetVendorsForUser()
-        //{
-        //    var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        [HttpGet("user-vendors")]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<IEnumerable<ServiceVendorDto>>> GetVendorsForUser()
+        {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-        //    var vendorsForUser = await _context.ServiceOrders
-        //        .Where(so => so.Request.UserId == currentUserId)
-        //        .GroupBy(so => so.Vendor)
-        //        .Select(g => new ServiceVendorDto
-        //        {
-        //            Id = g.Key.Id,
-        //            Name = g.Key.Name,
-        //            Area = g.Key.Area,
-        //            Rating = g.Key.Rating,
-        //            TotalOrders = g.Key.TotalOrders,
-        //        })
-        //        .OrderByDescending(v => v.Rating)
-        //        .ToListAsync();
+            var vendorsForUser = await _context.ServiceOrders
+                .Include(so => so.Vendor)
+                .Where(so => so.Request.UserId == currentUserId)
+                .GroupBy(g => g.Vendor.Id)
+                .Select(g => new ServiceVendorDto
+                {
+                    //Id = g.Vendor.Id,
+                    //Name = g.Vendor.Name,
+                    //Area = g.Vendor.Area,
+                    //Rating = g.Vendor.Rating,
+                    //TotalOrders = g.Vendor.TotalOrders,
+                    Id = g.Key, // Vendor.Id from the group
+                    Name = g.First().Vendor.Name, // Name from the first record in the group
+                    Area = g.First().Vendor.Area, // Area from the first record in the group
+                    Rating = g.First().Vendor.Rating, // Rating from the first record in the group
+                    TotalOrders = g.First().Vendor.TotalOrders,
+                })
+                .OrderByDescending(v => v.Rating)
+                .ThenByDescending(v => v.TotalOrders)
+                .ToListAsync();
 
-        //    return Ok(vendorsForUser);
-        //}
+            return Ok(vendorsForUser);
+        }
+        [HttpGet("trending-vendors")]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<IEnumerable<ServiceVendorDto>>> GetTrendingVendorsForUser()
+        {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var loc = await _context.Users.FindAsync(currentUserId);
 
+            var vendorsForUser = await _context.ServiceVendors
+                .Where(so => so.Area == loc.Area)
+                .Select(g => new ServiceVendorDto
+                {
+                    Id = g.Id,
+                    Name = g.Name,
+                    Area = g.Area,
+                    Rating = g.Rating,
+                    TotalOrders = g.TotalOrders,
+                })
+                .OrderByDescending(g => g.Rating)
+                .ThenByDescending(v => v.TotalOrders)
+                .ToListAsync();
+
+            return Ok(vendorsForUser);
+        }
         [HttpGet("responsers/{id}")]
         [Authorize(Roles = "User")]
         public async Task<ActionResult<IEnumerable<ServiceVendor>>> ResponserId(int id)
