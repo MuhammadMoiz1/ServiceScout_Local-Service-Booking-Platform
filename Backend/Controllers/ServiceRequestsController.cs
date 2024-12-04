@@ -294,6 +294,35 @@ namespace Backend.Controllers
             return NoContent(); 
         }
 
+        [HttpGet("PendingRatings")]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<IEnumerable<ServiceRequestDto>>> GetPendingRatings()
+        {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var oneDayAgo = DateTime.UtcNow.AddDays(-1);
+
+            var pendingRatings = await _context.ServiceRequests
+                .Where(r => r.UserId == currentUserId &&
+                            r.Iscompleted == true &&
+                            r.RequestedTime <= oneDayAgo &&
+                            !_context.ServiceOrders.Any(so => so.RequestId == r.Id && so.Status == "Rated"))
+                .Select(r => new ServiceRequestDto
+                {
+                    Id = r.Id,
+                    Description = r.Description,
+                    Area = r.Area,
+                    Price = r.Price,
+                    PostedOn = r.PostedOn,
+                    RequestedTime = r.RequestedTime,
+                    Username = r.User.Name,
+                    UserId = r.User.Id,
+                    ServiceName = r.Service.ServiceName
+                })
+                .ToListAsync();
+
+            return Ok(pendingRatings);
+        }
+
         // DELETE: api/ServiceRequests/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteServiceRequest(int id)
