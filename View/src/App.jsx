@@ -11,6 +11,8 @@ import ResponserCard from "./User/components/ResponseCard/ResponserCard";
 import VendorSignupForm from "./Vendor/Pages/VendorSignin";
 import VendorLogin from "./Vendor/Pages/VendorLogin";
 import HomePage from "./HomePage/HomePage";
+import ServiceOrderCard from "./User/components/OrderHistroyCard";
+import ServiceOrderGrid from "./User/pages/userOrderHistory";
 
 const App = () => {
   return (
@@ -24,7 +26,8 @@ const App = () => {
         <Route path="/user/login" element={<Login />} />
         <Route path="/user/signup" element={<SignIn />} />
         <Route path="/user/newRequest" element={<ServiceRequestForm />} />
-        <Route path="/user/responser" element={<ResponserCard />} />
+        <Route path="/user/service-history" element={<ServiceOrderGrid />} />
+
         </Route>
       
         {/* Vendor Routes */}

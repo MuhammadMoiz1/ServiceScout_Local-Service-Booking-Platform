@@ -125,10 +125,71 @@ namespace Backend.Controllers
 
             return Ok(new { Message = "Total orders updated successfully.", TotalOrders = serviceVendor.TotalOrders });
         }
+        [HttpGet("userOrders")]
+        [Authorize(Roles = "User")]
+        public async Task<ActionResult<IEnumerable<int>>> GetAllOrderIdsForUser()
+        {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var user = await _context.Users.FindAsync(currentUserId);
+
+            if (user == null)
+            {
+                return BadRequest("Invalid UserId.");
+            }
+
+            var serviceOrderIds = await _context.ServiceOrders
+                .Where(o => o.Request.UserId == currentUserId)  // Filter by user ID
+                .Select(o => o.Id)  // Only select the ID of the service order
+                .ToListAsync();
+
+            if (serviceOrderIds == null || !serviceOrderIds.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(serviceOrderIds);
+        }
+        [HttpGet("userOrderHistory/{id}")]
+        public async Task<ActionResult<ServiceOrderUserDto>> GetParticularServiceOrder(int id)
+        {
+            var serviceOrder = await _context.ServiceOrders
+                .Where(o => o.Id == id)
+                .Include(o => o.Request)
+                .Include(o => o.Vendor)
+                .FirstOrDefaultAsync();
+
+            if (serviceOrder == null)
+            {
+                return NotFound();
+            }
+
+            var serviceOrderDto = new ServiceOrderUserDto
+            {
+                Id = serviceOrder.Id,
+                Description = serviceOrder.Request.Description,
+                RequestedOn = serviceOrder.Request.PostedOn,
+                Amount = serviceOrder.Request.Price,
+                VendorName = serviceOrder.Vendor.Name,
+                VendorContactInfo = serviceOrder.Vendor.ContactInfo
+            };
+
+            return Ok(serviceOrderDto);
+            }
+         
+
+        public class ServiceOrderUserDto
+        {
+        public int Id { get; set; }
+        public string Description { get; set; }
+        public DateTime RequestedOn { get; set; }
+        public float Amount { get; set; }
+        public string VendorName { get; set; }
+        public string VendorContactInfo { get; set; }
+        }
 
 
-        // PUT: api/ServiceOrders/5
-        [HttpPut("{id}")]
+    // PUT: api/ServiceOrders/5
+    [HttpPut("{id}")]
         public async Task<IActionResult> PutServiceOrder(int id, UpdateServiceOrderDto serviceOrderDto)
         {
             if (id != serviceOrderDto.Id)
@@ -166,6 +227,39 @@ namespace Backend.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("get-pending-ratings")]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> GetPendingRatings()
+        {
+            var userId = int.Parse(User.FindFirst("Id").Value); // Assuming the user ID is stored in the JWT token.
+
+            var pendingRatings = await _context.ServiceOrders
+                .Include(so => so.Vendor)
+                .Include(so => so.Request)
+                .Where(so => so.Request.UserId == userId
+                             && so.Status != "Rated"
+                             && so.Request.RequestedTime <= DateTime.UtcNow.AddDays(-1)) // Check if the request is older than 1 day.
+                .Select(so => new
+                {
+                    so.Id,
+                    VendorName = so.Vendor.Name,
+                    VendorId = so.Vendor.Id,
+                    ServiceName = so.Request.Description,
+                    RequestedTime = so.Request.RequestedTime
+                })
+                .ToListAsync();
+
+            if (!pendingRatings.Any())
+            {
+                return Ok("No pending ratings.");
+            }
+
+            return Ok(pendingRatings);
+        }
+
+
+
 
         [HttpPost("rate")]
         [Authorize(Roles = "User")]
