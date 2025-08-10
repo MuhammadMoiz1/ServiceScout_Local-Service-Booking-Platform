@@ -228,11 +228,22 @@ namespace Backend.Controllers
             return NoContent();
         }
 
+        public class PendingRatingDto
+        {
+            public int ServiceOrderId { get; set; } 
+            public string VendorName { get; set; } 
+            public int VendorId { get; set; } 
+            public string ServiceName { get; set; } 
+            public DateTime RequestedTime { get; set; } 
+            public decimal Rating { get; set; }
+            public int RequestId {  get; set; } 
+        }
+
         [HttpGet("get-pending-ratings")]
         [Authorize(Roles = "User")]
-        public async Task<IActionResult> GetPendingRatings()
+        public async Task<ActionResult<IEnumerable<PendingRatingDto>>> GetPendingRatings()
         {
-            var userId = int.Parse(User.FindFirst("Id").Value); // Assuming the user ID is stored in the JWT token.
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             var pendingRatings = await _context.ServiceOrders
                 .Include(so => so.Vendor)
@@ -240,23 +251,27 @@ namespace Backend.Controllers
                 .Where(so => so.Request.UserId == userId
                              && so.Status != "Rated"
                              && so.Request.RequestedTime <= DateTime.UtcNow.AddDays(-1)) // Check if the request is older than 1 day.
-                .Select(so => new
+                .Select(so => new PendingRatingDto
                 {
-                    so.Id,
+                    ServiceOrderId = so.Id,
                     VendorName = so.Vendor.Name,
                     VendorId = so.Vendor.Id,
                     ServiceName = so.Request.Description,
-                    RequestedTime = so.Request.RequestedTime
+                    RequestedTime = so.Request.RequestedTime,
+                    Rating= so.Vendor.Rating,
+                    RequestId=so.Request.Id,
                 })
                 .ToListAsync();
+            Console.WriteLine(pendingRatings);
 
             if (!pendingRatings.Any())
             {
-                return Ok("No pending ratings.");
+                return NoContent();
             }
 
             return Ok(pendingRatings);
         }
+
 
 
 
@@ -279,8 +294,7 @@ namespace Backend.Controllers
             if (vendor != null)
             {
                 // Calculate and update vendor's rating
-                vendor.Rating = (vendor.Rating * vendor.TotalOrders + ratingDto.Rating) / (vendor.TotalOrders + 1);  // Add +1 to TotalOrders for new rating
-                vendor.TotalOrders++;  // Increment the total orders to include this new rating
+                vendor.Rating = (vendor.Rating * vendor.TotalOrders-1 + ratingDto.Rating) / (vendor.TotalOrders);  // Add +1 to TotalOrders for new rating
 
                 // Change the ServiceOrder status to "Rated"
                 serviceOrder.Status = "Rated";  // Set status to "Rated" after rating

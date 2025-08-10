@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Backend.Migrations
+namespace ServiceScout_Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241202134809_new_migrationf")]
-    partial class new_migrationf
+    [Migration("20241205085855_elephant")]
+    partial class elephant
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,6 +57,21 @@ namespace Backend.Migrations
                     b.HasIndex("VendorId");
 
                     b.ToTable("PendingLogs");
+                });
+
+            modelBuilder.Entity("Backend.Data.SavedService", b =>
+                {
+                    b.Property<int>("ServiceVendorId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceRequestId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ServiceVendorId", "ServiceRequestId");
+
+                    b.HasIndex("ServiceRequestId");
+
+                    b.ToTable("SavedServices");
                 });
 
             modelBuilder.Entity("Backend.Data.ServiceOrder", b =>
@@ -278,6 +293,25 @@ namespace Backend.Migrations
                     b.Navigation("User");
 
                     b.Navigation("Vendor");
+                });
+
+            modelBuilder.Entity("Backend.Data.SavedService", b =>
+                {
+                    b.HasOne("Backend.Data.ServiceRequest", "ServiceRequest")
+                        .WithMany()
+                        .HasForeignKey("ServiceRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Data.ServiceVendor", "ServiceVendor")
+                        .WithMany()
+                        .HasForeignKey("ServiceVendorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServiceRequest");
+
+                    b.Navigation("ServiceVendor");
                 });
 
             modelBuilder.Entity("Backend.Data.ServiceOrder", b =>
